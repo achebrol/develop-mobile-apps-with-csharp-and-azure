@@ -80,14 +80,16 @@ All of the following software are freely available.  You should install each pac
 
 * [XCode][19] (available on the Mac App Store)
 * [Visual Studio for Mac][20]
-* [Android Studio and Tools][21] (if you intend to build Android apps on the Mac)
+* [Android Studio and Tools][21]
+* [.NET Core 2.2][17]
 
-You must run XCode at least once after installation so that you can accept the license agreement.
+You must run XCode at least once after installation so that you can accept the license agreement. 
 
 #### On your Windows PC
 
 * [Android Studio and Tools][22]
 * [Visual Studio 2017 Community][23]
+* [.NET Core 2.2][17]
 
 When installing Visual Studio, you will want to install the following workloads:
 
@@ -129,6 +131,7 @@ Now, let's get developing[ch1]!
 [14]: http://guide.bash.academy/
 [15]: https://mva.microsoft.com/en-us/training-courses/getting-started-with-powershell-3-0-jump-start-8276
 [16]: http://try.github.io/
+[17]: https://dotnet.microsoft.com/download/dotnet-core/2.2
 [18]: https://www.apple.com/mac-mini/
 [19]: https://developer.apple.com/xcode/
 [20]: https://visualstudio.microsoft.com/vs/mac/

@@ -6,7 +6,11 @@ site_author: Adrian Hall
 copyright: 'Copyright &copy; 2017-2019 Adrian Hall'
 nav:
     - Getting Started: index.md
-theme: material
+    - Introduction: chapter1/index.md
+theme: 
+  name: material
+  highlightjs: true
+  hljs_style: vs2015
 extra:
     palette:
       primary: 'red'
@@ -19,13 +23,11 @@ extra:
 markdown_extensions:
     - toc:
         permalink: true
-    - fenced_code
+    - codehilite:
+        linenums: true
     - admonition
 extra_css:
   - css/extra.css
-  - css/vs.css
-extra_javascript:
-  - js/highlight.pack.js
 google_analytics:
   - 'UA-93366112-1'
   - 'auto'

@@ -6,11 +6,11 @@ How simple?
 
 We will implement a highly scalable REST service in Microsoft Azure to store the tasks in our list.  This will include the following endpoints:
 
-* `GET /tasks` will retrieve all the tasks.
-* `GET /tasks/{id}` will retrieve a specific task.
-* `POST /tasks` will store a new task.
-* `POST /tasks/{id}` will update a task with new information.
-* `DELETE /tasks/{id}` will delete a task.
+* `GET /api/tasks` will retrieve all the tasks.
+* `GET /api/tasks/{id}` will retrieve a specific task.
+* `POST /api/tasks` will store a new task.
+* `PUT /api/tasks/{id}` will update a task with new information.
+* `DELETE /api/tasks/{id}` will delete a task.
 
 The data will be transferred in JSON format.  For services, we will use Azure App Service to run our web API.  We will use an in-memory database to store the data.  This means that once we shut down our app, our data will disappear along with it.
 
