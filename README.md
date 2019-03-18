@@ -11,7 +11,7 @@ You can find [the book online](https://adrianhall.github.io/develop-mobile-apps-
 The book uses [MkDocs](http://www.mkdocs.org) for the content.  Install pre-requisites with the following:
 
 ```
-pip install [--user] mkdocs mkdocs-material
+pip install [--user] mkdocs pymdown-extensions mkdocs-material
 ```
 
 To build the static site, use:

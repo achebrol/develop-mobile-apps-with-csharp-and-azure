@@ -28,34 +28,37 @@ The model describes what an individual item looks like.  The context describes w
 2. Right-click the Models folder, then select **Add** > **Class**.  Name the class _TodoItem_, then click **Add**.
 3. Replace the code in the file with the following:
 
-        :::csharp
-        namespace Backend.Models
+    ```csharp
+    namespace Backend.Models
+    {
+        public class TodoItem
         {
-            public class TodoItem
-            {
-                public string Id { get; set; }
-                public string Title { get; set; }
-                public bool IsComplete { get; set; }
-            }
+            public string Id { get; set; }
+            public string Title { get; set; }
+            public bool IsComplete { get; set; }
         }
+    }
+    ```
 
 4. Right-click the Models folder, then select **Add** > **Class**.  Name the class _TodoContext_ then click **Add**.
 5. Replace the code in the file with the following:
 
-        :::csharp
-        using Microsoft.EntityFrameworkCore;
+    ```csharp 
+    using Microsoft.EntityFrameworkCore;
 
-        namespace Backend.Models
+    namespace Backend.Models
+    {
+        public class TodoContext : DbContext
         {
-            public class TodoContext : DbContext
+            public TodoContext(DbContextOptions<TodoContext> options) : base(options)
             {
-                public TodoContext(DbContextOptions<TodoContext> options) : base(options)
-                {
-                }
-
-                public DbSet<TodoItem> TodoItems { get; set; }
             }
+
+            public DbSet<TodoItem> TodoItems { get; set; }
         }
+    }
+    ```
+
 
 Let's talk a little about that model.  Two of the fields are straight forward.  The `Title` and `IsComplete` fields will be directly represented within the UI of the application.  The `Id` field, however, is a string.  If you have come from a database background, you might expect this to be an auto-incrementing integer, represented by the long type.  However, this is a mobile context.  In a mobile context, multiple clients may be creating TodoItem objects at any time.  The `Id` must be unique globally across all mobile clients.  Although you can use anything for the `Id`, it's common practice to use a UUID.  Of course, since we don't know what a mobile client will send us, we choose a string to represent it.
 
@@ -167,12 +170,13 @@ Let's create a task:
 3. Select **raw** and **JSON (application/json)**.
 4. Enter the following JSON into the body box:
 
-        :::json
-        {
-            "id": "item1",
-            "title": "Test",
-            "iscomplete": false
-        }
+    ```json
+    {
+        "id": "item1",
+        "title": "Test",
+        "iscomplete": false
+    }
+    ```
 
 5. Click **Send**.
 

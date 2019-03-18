@@ -7,10 +7,12 @@ copyright: 'Copyright &copy; 2017-2019 Adrian Hall'
 nav:
     - Getting Started: index.md
     - Introduction: chapter1/index.md
+
 theme: 
   name: material
   highlightjs: true
   hljs_style: vs2015
+
 extra:
     palette:
       primary: 'red'
@@ -20,12 +22,18 @@ extra:
       link: 'https://github.com/adrianhall'
     - type: 'twitter'
       link: 'https://twitter.com/FizzyInTheHall'
+
 markdown_extensions:
     - toc:
         permalink: true
     - codehilite:
         linenums: true
     - admonition
+    - pymdownx.inlinehilite
+    - pymdownx.keys
+    - pymdownx.smartsymbols
+    - pymdownx.superfences
+
 extra_css:
   - css/extra.css
 google_analytics:

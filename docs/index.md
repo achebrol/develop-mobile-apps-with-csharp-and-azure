@@ -112,7 +112,7 @@ Aside from Azure resources, you will want some place to store your code.  This d
 
 You will need a **Developer Account** for the appropriate app store if you intend to distribute your mobile clients or if you intend to use specific cloud services (such as push notifications).  I will point out when you need these accounts for development.
 
-Now, let's get developing[ch1]!
+Now, [let's get developing][ch1]!
 
 <!-- Link References -->
 [1]: https://facebook.github.io/react-native/
