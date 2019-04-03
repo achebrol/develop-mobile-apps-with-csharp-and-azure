@@ -1,34 +1,72 @@
 # Build a Mobile App on Windows
 
+!!! tip "Enable Android Emulator on Hyper-V"
+    Before getting started with development on the front end, you may want to set up an Android emulator.  This requires [setting up Hyper-V on your Windows system][1].  Since this will likely require a reboot of your system, it's best to configure Hyper-V ahead of time.
+
 Now that the mobile backend is created, we can move to the client side of things.  If you have previously closed your project, re-open the project in Visual Studio now.  The first step is to add a new project to the solution that will represent our mobile app.
 
-> **One solution or two?**  Code organization is important and it generates a lot of opinions.  Some people like to keep the backend separate from the frontend code (two solutions), while others like to keep everything together (one solution).  There are pros and cons for each method, which you will need to discover for yourself.  For this book, I always keep the backend with the frontend code in one solution.
+> **One solution or two?**  Code organization is important and it generates a lot of opinions.  Some people like to keep the backend separate from the frontend code (two solutions), while others like to keep everything together (one solution).  There are pros and cons for each method, which you will need to discover for yourself.  For the purposes of code organization within this book, I always keep the backend with the frontend code in one solution.  You can find solutions for all the projects within this book on the [Github project](https://github.com/adrianhall/develop-mobile-apps-with-csharp-and-azure).
 
 1. In the solution explorer, right-click the solution and select **Add** > **New Project...**.
-2. Select **Visual C#** > **Cross-Platform** > **Mobile App (Xamarin.Forms)**.
-3. Give the project a name, then click **OK**.
+2. In the search box, enter _Mobile_, then press Enter.  Select the **Mobile App (Xamarin.Forms)** project template, then click **Next**.
 
-    ![](./frontend-pc-image1.png)
+    ![](./img/frontend-pc-image1.png)
 
-4. In the **New Cross Platform App** window:
+
+3. Give the project a good name (like _Frontend_), then click **Create**.
+
+    ![](./img/frontend-pc-image2.png)
+
+4. In the **New Cross Platform App** window, select **Blank** and then click **OK**
     * Select **Blank**.
-    * Uncheck **Windows (UWP)**.
     * Ensure **Shared Code** is selected as the code sharing strategy.
     * Click **OK**.
 
-    ![](./frontend-pc-image2.png)
+    ![](./img/frontend-pc-image3.png)
 
-Visual Studio will now scaffold three projects: a shared project where your business logic is stored, plus a platform-specific project for each platform you selected (in this case, iOS and Android).
+Visual Studio will now scaffold three projects: a shared project where your business logic is stored, plus a platform-specific project for each platform you selected (in this case, iOS and Android).  
 
-![](./frontend-pc-image3.png)
+![](./img/frontend-pc-image4.png)
 
-!!! info "Code Sharing Strategies"
-    The latest versions of Xamarin.Forms and Visual Studio provide two different code sharing strategies - **.NET Standard** and **Shared Code**.  Most of the time, you will want to compile with _.NET Standard_  in mind as this provides the maximal compatibility and force you to keep platform-specific code in the platform-specific projects.  However, sometimes, it is impossible to avoid including platform-specific code in the shared project.  In this case, you will want to select _Shared Code_.
+Visual Studio allows you to build iOS applications directly from Visual Studio using a Mac.  I've got a Mac Mini under my desk for this purpose. We'll work on setting up the mac and compiling the iOS application later.  For now, let's continue with just the Android app.  Before you begin, set the **Frontend.Android** project as the startup project (right-click on the project and select **Set as StartUp Project**).  Then click the **Android Emulator** button to start an emulator.  If this is the first time you have created an Android app with Visual Studio, it will walk you through creating an emulated device.  Click **Start** to start the emulator you just created.  
 
-Xamarin does allow us to build iOS applications directly from Visual Studio using a Mac.  I use a properly configured Mac Mini for this functionality.  We'll work on setting up the mac and compiling the iOS application later.  For now, let's continue with just the Android app.
+!!! tip "Keep the emulator running"
+    While you are developing your app, keep the emulator running.  You will skip the device startup delay (which can be considerable) when you do this.
 
-Before I get started with any project (and after scaffolding), I always look in NuGet (right-click on the solution and select **Manage NuGet Packages for solution...**) for updated packages.  Xamarin.Forms and the Android support libraries are updated frequently and you may need to update them.  Once updated, you should always build your app to ensure compatibility:
+Now go back to Visual Studio.  The run button will now be displayed as the device you have started:
 
-1. Right-click your Android specific project and select **Set as StartUp Project**.
-2. Right-click your Android specific project and select **Rebuild**.
+![](./img/frontend-pc-image5.png)
+
+Click the run button to start your app.  The app will be compiled, built into an APK, signed, and deployed to your emulated device.  Eventually, the app will display a nice screen with "Welcome to Xamarin Forms!" on it.  This shows that your build and deployment environment for development work is working.  Click the **stop** button within Visual Studio to shut the app down.
+
+## Design your app
+
+The application we are going to build together is a simple task list.  The mobile client will have three screens - an entry screen, a task list, and a task details page.  I have mocked these pages up using [MockingBot][2].
+
+!!! tip
+    Mocking your screens before you start coding is a great habit to get into.  There are some great tools available including free tools like [MockingBot][3].  Doing mockups before you start coding is a good way to prevent wasted time later on.
+
+![](./img/frontend-mockingbot.png)
+
+!!! tip 
+    If you are using iOS, then you may want to remove the back button as the style guides suggest you don't need one.  Other platforms will need it though, so it's best to start with the least common denominator.
+
+My ideas for this app include:
+
+* Tapping on a task title in the task list will bring up the details page.
+* Toggling the completed link in the task list will set (or clear) the completed flag.
+* Tapping the spinner will initiate a network refresh.
+
+Now that the client screens are planned out, we can move onto coding.
+
+## Build the common library
+
+There are generally two parts to any cloud-connected app.  The first is the connection to the cloud, and the second is the UI that users of the app will interact with.  I like to put as much as possible in the common library.  Xamarin.Forms apps can share up to 90% of their code, which saves valuable time.  Let's start with the cloud service.
+
+I use interfaces for almost everything.  An interface allows me to abstract the concrete implementation of something so that I can mock it for testing purposes later on.  This isolates the code changes to just the concrete implementation - anything else within the app will use the interface.  Consider an interface as a contract between the concrete implementation and the rest of your app.
+
+
+[1]: https://docs.microsoft.com/en-us/xamarin/android/get-started/installation/android-emulator/hardware-acceleration?tabs=vswin&pivots=windows#hyper-v
+[2]: https://mockingbot.com/app/RQe0vlW0Hs8SchvHQ6d2W8995XNe8jK#screen=s8BD92432F11467855027824
+[3]: https://mockingbot.com/
 
