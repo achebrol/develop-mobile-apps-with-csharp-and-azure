@@ -21,7 +21,6 @@ namespace Backend
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase("TodoList"));
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 

@@ -68,9 +68,7 @@ The list of hardware and software for mobile development is longer than your typ
 
 ### Hardware
 
-You will want a computer on which to develop code.  If you develop iOS applications, then you **MUST** have a Mac running the latest version of Mac OSX.  Android applications can be developed on either platform.
-
-My own experience has taught me that the tooling for developing mobile backends in C# and ASP.NET (our primary languages during the course of this book) are better on a PC running Windows 10.  Thus, my hardware choice is a rather beefy Windows 10 PC for my main development system.  In addition, I have a [Mac Mini][18] underneath my desk that I use to build the iOS portions of the applications.
+You will want a computer on which to develop code.  If you develop iOS applications, then you **MUST** have a Mac running the latest version of Mac OSX.  Android applications can be developed on either Windows or Mac.  It is no wonder, then, that the platform of choice for mobile development is a Mac.  My own experience has taught me that the tooling for developing mobile backends in C# and ASP.NET (our primary languages during the course of this book) are better on a PC running Windows 10.  Thus, my hardware choice is a rather beefy Windows 10 PC for my main development system.  In addition, I have a [Mac Mini][18] underneath my desk that I use to build the iOS portions of the applications.
 
 ### Software
 
@@ -88,10 +86,10 @@ You must run XCode at least once after installation so that you can accept the l
 #### On your Windows PC
 
 * [Android Studio and Tools][22]
-* [Visual Studio 2017 Community][23]
+* [Visual Studio 2019][23]
 * [.NET Core 2.2][17]
 
-When installing Visual Studio, you will want to install the following workloads:
+I use Visual Studio 2019 Enterprise for my development, but there is no difference between the editions for the individual developer.  Pick whichever edition of Visual Studio you like.  When installing Visual Studio, you will want to install the following workloads:
 
 * Universal Windows Platform development.
 * ASP.NET and web development.
@@ -137,7 +135,7 @@ Now, [let's get developing][ch1]!
 [20]: https://visualstudio.microsoft.com/vs/mac/
 [21]: https://developer.android.com/studio/
 [22]: https://developer.android.com/studio/
-[23]: https://visualstudio.microsoft.com/vs/community/
+[23]: https://visualstudio.microsoft.com/downloads/
 [25]: https://msdn.microsoft.com/en-us/
 [27]: https://azure.microsoft.com/en-us/free/
 
