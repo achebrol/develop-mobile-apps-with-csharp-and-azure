@@ -63,7 +63,77 @@ Now that the client screens are planned out, we can move onto coding.
 
 There are generally two parts to any cloud-connected app.  The first is the connection to the cloud, and the second is the UI that users of the app will interact with.  I like to put as much as possible in the common library.  Xamarin.Forms apps can share up to 90% of their code, which saves valuable time.  Let's start with the cloud service.
 
-I use interfaces for almost everything.  An interface allows me to abstract the concrete implementation of something so that I can mock it for testing purposes later on.  This isolates the code changes to just the concrete implementation - anything else within the app will use the interface.  Consider an interface as a contract between the concrete implementation and the rest of your app.
+I use interfaces for almost everything.  An interface allows me to abstract the concrete implementation of something so that I can mock it for testing purposes later on.  This isolates the code changes to just the concrete implementation - anything else within the app will use the interface.  Consider an interface as a contract between the concrete implementation and the rest of your app.  In this case, I want two different interfaces:
+
+* `ICloudServiceClient` represents the connection to the Azure Cloud.
+* `IDataTable<T>` represents the CRUDL operations on a specific table.
+
+The `ICloudServiceClient` is the first one and it is fairly simple:
+
+```csharp
+namespace Frontend.Services
+{
+    public interface ICloudServiceClient
+    {
+        IDataTable<T> GetTable<T>() where T : TableData;
+    }
+}
+```
+
+Any operation that deals with the Azure cloud service will be represented here.  In this case, we have one operation - dealing with a table.  That returns `IDataTable<T>`:
+
+```csharp
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace Frontend.Services
+{
+    public interface IDataTable<T> where T : TableData
+    {
+        Task<T> CreateItemAsync(T item);
+        Task<T> ReadItemAsync(string id);
+        Task<T> UpdateItemAsync(T item);
+        Task DeleteItemAsync(T item);
+        Task<ICollection<T>> ReadAllItemsAsync();
+    }
+}
+```
+
+This is a generic that takes the model of the data.  The model must conform to the `TableData` shape:
+
+```csharp
+namespace Frontend.Services
+{
+    public abstract class TableData
+    {
+        public string Id { get; set; }
+    }
+}
+```
+
+Taken together, our cloud service is a collection of tables, where each table allows me to perform CRUDL operations.  The model for the data within each table must have a string `Id` field.  The model actually looks like this:
+
+```csharp
+using Frontend.Services;
+
+namespace Frontend.Models
+{
+    public class TodoItem : TableData
+    {
+        public string Title { get; set; }
+        public bool IsComplete { get; set; }
+    }
+}
+```
+
+Note that this matches what we wrote in the backend, but the `Id` field is moved to the `TableData` class.  It is especially important that the model name matches the controller name in the backend.  If the model in the client is named `X`, then you should have a controller called `XsController` that listens on `/api/xs` over HTTP.
+
+!!! tip Share your models, but be careful
+    You can share your models between the frontend and backend code.  However, you must be careful.  All the classes necessary to implement the models must be placed in a shared project.  In addition, you need to make sure that the data is completely duplicated between the frontend and backend.  It is normal to have "extras" in the backend.  For example, you may have an extra deleted flag in the backend that is not exposed in the frontend code.
+
+We can now move to the concrete implementations of the `ICloudServiceClient` and `ITableData` interfaces.  The `AzureCloudServiceClient` class is my concrete reprensentation of an `ICloudServiceClient`.  
+
+
 
 
 [1]: https://docs.microsoft.com/en-us/xamarin/android/get-started/installation/android-emulator/hardware-acceleration?tabs=vswin&pivots=windows#hyper-v

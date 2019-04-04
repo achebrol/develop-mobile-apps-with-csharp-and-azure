@@ -11,23 +11,23 @@ namespace Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TasksController : ControllerBase
+    public class TodoItemsController : ControllerBase
     {
         private readonly TodoContext _context;
 
-        public TasksController(TodoContext context)
+        public TodoItemsController(TodoContext context)
         {
             _context = context;
         }
 
-        // GET: api/Tasks
+        // GET: api/TodoItems
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
         {
             return await _context.TodoItems.ToListAsync();
         }
 
-        // GET: api/Tasks/5
+        // GET: api/TodoItems/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoItem>> GetTodoItem(string id)
         {
@@ -41,7 +41,7 @@ namespace Backend.Controllers
             return todoItem;
         }
 
-        // PUT: api/Tasks/5
+        // PUT: api/TodoItems/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTodoItem(string id, TodoItem todoItem)
         {
@@ -71,7 +71,7 @@ namespace Backend.Controllers
             return NoContent();
         }
 
-        // POST: api/Tasks
+        // POST: api/TodoItems
         [HttpPost]
         public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
         {
@@ -81,7 +81,7 @@ namespace Backend.Controllers
             return CreatedAtAction("GetTodoItem", new { id = todoItem.Id }, todoItem);
         }
 
-        // DELETE: api/Tasks/5
+        // DELETE: api/TodoItems/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<TodoItem>> DeleteTodoItem(string id)
         {

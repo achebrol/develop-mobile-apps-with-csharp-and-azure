@@ -131,9 +131,9 @@ The next step is to add some HTTP methods that can be used to access the data:
 4. Fill in the presented form as follows:
     * Model class: **TodoItem (Backend.Models)**
     * Data context class: **TodoContext (Backend.Models)**
-    * Controller name: **TasksController**
+    * Controller name: **TodoItemsController**
 
-   ![](./img/backend-pc-image5.jpg)
+   ![](./img/backend-pc-image5.png)
 
 5. Click **Add**.
 
@@ -162,7 +162,7 @@ Minimize the browser since you won't be using it.  Instead, start Postman.
 !!! tip
     Configure SSL certificate verification when you first install Postman.  To do this, go to **Settings** > **General**.  Turn off the **SSL certificate verification** switch, then close the Settings pane.
 
-Go to `https://localhost:44313/api/tasks`.  You should receive an empty JSON array as a response, which makes sense.  We have not created any tasks yet.  
+Go to `https://localhost:44313/api/todoitems`.  You should receive an empty JSON array as a response, which makes sense.  We have not created any tasks yet.  
 
 ![](./img/backend-pc-image7.jpg)
 
@@ -195,11 +195,11 @@ You can add additional items in a similar way.  Just ensure that you change the 
 
 > What happens when you submit a record with a duplicate ID?  You get a `500 Internal Server Error` and a bunch of HTML.  There are definitely improvements that can be made to the default error handling within the controller.
 
-If you wish to update a record, you will need to post to the unique ID.  Try changing a record by using `PUT /api/tasks/item1`:
+If you wish to update a record, you will need to post to the unique ID.  Try changing a record by using `PUT /api/todoitems/item1`:
 
 ![](./img/backend-pc-image10.jpg)
 
-We don't get any content back - just a success code.  If, however, we repeat the `GET /api/tasks` request, we will see the updated data.
+We don't get any content back - just a success code.  If, however, we repeat the `GET /api/todoitems` request, we will see the updated data.
 
 ## Move on to the front end
 
