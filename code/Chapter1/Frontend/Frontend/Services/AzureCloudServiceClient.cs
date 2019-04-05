@@ -2,9 +2,9 @@
 
 namespace Frontend.Services
 {
-    public class AzureCloudServiceClient : ICloudServiceClient
+    public sealed class AzureCloudServiceClient : ICloudServiceClient
     {
-        protected Uri baseUri = new Uri("https://localhost:44398");
+        private Uri baseUri = new Uri("https://localhost:44398");
 
         public IDataTable<T> GetTable<T>() where T : TableData
         {
