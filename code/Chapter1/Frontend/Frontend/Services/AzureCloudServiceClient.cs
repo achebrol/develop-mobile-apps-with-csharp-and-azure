@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Frontend.Services
 {
@@ -8,14 +6,10 @@ namespace Frontend.Services
     {
         protected Uri baseUri = new Uri("https://localhost:44398");
 
-        public AzureCloudServiceClient()
-        {
-
-        }
-
         public IDataTable<T> GetTable<T>() where T : TableData
         {
-            throw new NotImplementedException();
+            var tableName = typeof(T).Name.ToLowerInvariant();
+            return new RESTDataTable<T>(baseUri, $"api/{tableName}");
         }
     }
 }

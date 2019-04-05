@@ -131,7 +131,126 @@ Note that this matches what we wrote in the backend, but the `Id` field is moved
 !!! tip Share your models, but be careful
     You can share your models between the frontend and backend code.  However, you must be careful.  All the classes necessary to implement the models must be placed in a shared project.  In addition, you need to make sure that the data is completely duplicated between the frontend and backend.  It is normal to have "extras" in the backend.  For example, you may have an extra deleted flag in the backend that is not exposed in the frontend code.
 
-We can now move to the concrete implementations of the `ICloudServiceClient` and `ITableData` interfaces.  The `AzureCloudServiceClient` class is my concrete reprensentation of an `ICloudServiceClient`.  
+## Build a RESTful Client
+
+The next step is to build the concrete implementations of the `ICloudServiceClient` and `IDataTable<T>` interfaces such that it will consume the RESTful web service back end we built earlier.  There are several libraries that we can use to consume a RESTful endpoint, but I tend towards using the basic [`HttpClient`](https://docs.microsoft.com/en-us/aspnet/web-api/overview/advanced/calling-a-web-api-from-a-net-client) library that is provided by Microsoft.  Let's start with taking a look at the `AzureCloudServiceClient` class:
+
+```csharp
+using System;
+
+namespace Frontend.Services
+{
+    public class AzureCloudServiceClient : ICloudServiceClient
+    {
+        protected Uri baseUri = new Uri("https://localhost:44398");
+
+        public IDataTable<T> GetTable<T>() where T : TableData
+        {
+            var tableName = typeof(T).Name.ToLowerInvariant();
+            return new RESTDataTable<T>(baseUri, $"api/{tableName}s");
+        }
+    }
+}
+```
+
+There are a couple of notes about this implementation:
+
+* This is where I store the endpoint to my API.
+* I get the name of the table from the model.  Thus, if I pass in `TodoItem` as the model, then `tableName` is `todoitem`, and the path is `api/todoitems`.
+
+I use a pretty standard REST client implementation for the `RESTDataTable` class:
+
+```csharp
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Frontend.Services
+{
+    class RESTDataTable<T> : IDataTable<T> where T : TableData
+    {
+        private HttpClient client = new HttpClient();
+        private string tablePath;
+
+        public RESTDataTable(Uri endpoint, string path) {
+            client.BaseAddress = endpoint;
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            this.tablePath = path;
+        }
+
+        public async Task<T> CreateItemAsync(T item)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(item), Encoding.UTF8);
+            var response = await client.PostAsync(tablePath, content);
+            response.EnsureSuccessStatusCode();
+            return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
+        }
+
+        public async Task DeleteItemAsync(T item)
+        {
+            var response = await client.DeleteAsync($"{tablePath}/{item.Id}");
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<ICollection<T>> ReadAllItemsAsync()
+        {
+            var response = await client.GetAsync(tablePath);
+            response.EnsureSuccessStatusCode();
+            return JsonConvert.DeserializeObject<List<T>>(await response.Content.ReadAsStringAsync());
+        }
+
+        public async Task<T> ReadItemAsync(string id)
+        {
+            var response = await client.GetAsync($"{tablePath}/{id}");
+            response.EnsureSuccessStatusCode();
+            return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
+        }
+
+        public async Task<T> UpdateItemAsync(T item)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(item), Encoding.UTF8);
+            var response = await client.PutAsync($"{tablePath}/{item.Id}", content);
+            response.EnsureSuccessStatusCode();
+            return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
+        }
+    }
+}
+```
+
+A few notes about this class as well:
+
+* I am using `HttpClient`, which is the C# standard way of communicating with HTTP APIs.
+* Each CRUDL method takes the same form - create any post body you need, call the right client method, ensure it's successful (or throw an exception) and then deserialize what comes back from the server.
+* I'm using [Newtonsoft.Json](https://www.newtonsoft.com/json) - a fairly standard JSON serialization library to do the work of converting between the model and the JSON representation needed for the wire protocol.
+
+!!! tip Add NuGet Packages to all front end projects
+    You may find that, after building, you will see `Newtonsoft.Json` is not available within the Android or iOS projects.  When adding new libraries, you generally need to ensure that you add the NuGet reference to all front end projects for it to work properly.  You can easily do this by right-clicking on the solution, then selecting **Manage NuGet Packages for Solution...**
+
+It is normal to develop network clients as singletons.  Generally, the client will be doing more than what we are doing here.  This may include caching and database access.  The `HttpClient` object is a session that shares configuration options and TCP connections.  It will help reuse TCP connections, which will, in general, lead to better performance.  This is especially true in a mobile context where the device is resource constrained.  My implementation is not a singleton, but we can make it so by either implementing the [Singleton pattern](https://www.c-sharpcorner.com/UploadFile/8911c4/singleton-design-pattern-in-C-Sharp/).  In Xamarin, we have an alternative.  We can instantiate the client in the `Application` method (located in the `App.xaml.cs` file), which is instantiated as a singleton class as well:
+
+```csharp hl_lines="8"
+using Frontend.Services;
+using Xamarin.Forms;
+
+namespace Frontend
+{
+    public partial class App : Application
+    {
+        public static ICloudServiceClient cloudClient = new AzureCloudServiceClient();
+
+        public App()
+        {
+            InitializeComponent();
+            MainPage = new MainPage();
+        }
+    }
+}
+```
 
 
 
