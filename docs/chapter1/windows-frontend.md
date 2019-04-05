@@ -252,8 +252,234 @@ namespace Frontend
 }
 ```
 
+## Build the UI
 
+Earlier, I showed the mockup for the UI.  It included three pages - an entry page, a list page, and a detail page.  Each page has three elements - a XAML definition file, a (simple) code-behind file and a view model.
 
+!!! info
+    This book is not inteded to introduce you to everything that there is to know about Xamarin and UI programming with XAML.  If you wish an introduction to the topi, I recommend reading the excellent book by Charles Petzold: [Creating Mobile Apps with Xamarin Form](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/creating-mobile-apps-xamarin-forms/).
+
+I use MVVM (or Model-View-ViewModel) as a framework for UI development in Xamarin-based applications.  It is a clean pattern that is well documented.  In MVVM, this is a 1:1 correlation between the view and view-model, 2-way communication between the view and the view-model, and properties within the view-model are bound directly to UI elements.  View-models expost an `INotifyPropertyChanged` event to tell the UI that something within the view-model has changed, allowing the UI to react to the change.
+
+We must implement the `INotifyPropertyChanged` interface.  To do that, I use a `BaseViewModel` class that implements the interface.  Aside from the interface implementation, there are some common properties that are needed for every page.  For example, every page needs a title and an indicator of network activity.  All view-models will inherit from this base:
+
+```csharp
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+
+namespace Frontend.ViewModels
+{
+    public class BaseViewModel : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+        private string propTitle = string.Empty;
+        private bool propIsBusy = false;
+
+        public string Title
+        {
+            get { return propTitle; }
+            set { SetProperty(ref propTitle, value, "Title"); }
+        }
+
+        public bool IsBusy
+        {
+            get { return propIsBusy; }
+            set { SetProperty(ref propIsBusy, value, "IsBusy"); }
+        }
+
+        protected void SetProperty<T>(ref T store, T value, string propName, Action onChanged = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(store, value)) return;
+            store = value;
+            if (onChanged != null)
+                onChanged();
+            OnPropertyChanged(propName);
+        }
+
+        public void OnPropertyChanged(string propName)
+        {
+            if (PropertyChanged == null) return;
+            PropertyChanged(this, new PropertyChangedEventArgs(propName));
+        }
+    }
+}
+```
+
+This is a fairly common `INotifyPropertyChanged` interface implementation pattern. Each property that we want to expose is a standard property, but the set operation is replaced by the `SetProperty()` call. The `SetProperty()` call deals with the notification; calling the event emitter if the property has changed value. We only need two properties on the `BaseViewModel`: the title and the network indicator.
+
+I tend to write my apps in two stages. I concentrate on the functionality of the app in the first stage. There is no fancy graphics, custom UI widgets, or anything else to clutter the thinking. The page is all about the functionality of the various interactions. Once I have the functionality working, I work on the styling of the page. We won't be doing any styling work in the demonstration apps that we write during the course of this book.
+
+The `EntryPage` has just one thing to do. It provides a button that enters the app. When we cover authentication later on, we'll use this to log in to the backend. If you are looking at the perfect app, this is a great place to put the introductory screen.  First, create a `Pages` folder in the shared frontend project to hold the pages of the application. Then right-Click the `Pages` folder in the solution explorer and choose **Add** -> **New Item...**. In the Add New Item dialog, pick **Visual C# Items** -> **Xamarin.Forms** -> **Content Page**. Name the new page `EntryPage.xaml`. This will create two files - `EntryPage.xaml` and `EntryPage.xaml.cs`. Let's center a button on the page and wire it up with a command. Here is the `Pages\EntryPage.xaml` file:
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Frontend.Pages.EntryPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="{Binding Title}">
+    <ContentPage.Content>
+        <StackLayout
+            HorizontalOptions="Center"
+            Orientation="Vertical"
+            VerticalOptions="Center">
+            <Button
+                BackgroundColor="Teal"
+                BorderRadius="10"
+                Command="{Binding LoginCommand}"
+                Text="Login"
+                TextColor="White" />
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
+```
+
+There are a couple of interesting things to note here. The `StackLayout` element is our layout element. It occupies the entire screen (since it is a direct child of the content page) and the options just center whatever the contents are. The only contents are a button. There are two bindings. These are bound from the view-model. We've already seen the `Title` property - this is a text field that specifies the title of the page. The other binding is a login command. When the button is tapped, the login command will be run. We'll get onto that in the view-model later.
+
+The other part of the XAML is the code-behind file. Because we are moving all of the non-UI code into a view-model, the code-behind file is trivial:
+
+```csharp
+using Frontend.ViewModels;
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
+
+namespace Frontend.Pages
+{
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class EntryPage : ContentPage
+    {
+        public EntryPage()
+        {
+            InitializeComponent();
+            BindingContext = new EntryPageViewModel();
+        }
+    }
+}
+```
+
+This is a recipe that will be repeated over and over again for the code-behind when you are using a XAML-based project with MVVM. We initialize the UI, then bind all the bindings to a new instantiation of the view model.  Talking of which, the view-model needs just to handle the login click. Note that the location or namespace is `Frontend.ViewModels`. Here is the code for `ViewModels\EntryPageViewModel.cs`:
+
+```csharp
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Xamarin.Forms;
+
+namespace Frontend.ViewModels
+{
+    public class EntryPageViewModel : BaseViewModel
+    {
+        public EntryPageViewModel() => Title = "Task List";
+
+        Command loginCmd;
+        public Command LoginCommand => loginCmd ?? (loginCmd = new Command(async () => await ExecuteLoginCommand().ConfigureAwait(false)));
+
+        async Task ExecuteLoginCommand()
+        {
+            if (IsBusy) return;
+            IsBusy = true;
+
+            try
+            {
+                Application.Current.MainPage = new NavigationPage(new Pages.TaskList());
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[Login] Error = {ex.Message}");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+    }
+}
+```
+
+This is a fairly simple view-model but there are some patterns here that are worth explaining. Firstly, note the way we create the `LoginCommand` property. This is the property that is bound to the `Command` parameter in the `Button` of our view. This recipe is the method of invoking a UI action asynchronously. It isn't important now, but we will use this technique repeatedly as our UI actions kick off network activity.
+
+The second is the pattern for the `ExecuteLoginCommand` method. Firstly, I ensure nothing else is happening by checking the `IsBusy` flag. If nothing is happening, I set the `IsBusy` flag. Then I do what I need to do in a try/catch block. If an exception is thrown, I deal with it. Most of the time this involves displaying an error condition. There are several cross-platform dialog packages to choose from or you can roll your own. That is not covered here. We just write a debug log statement so we can see the result in the debug log. Once everything is done, we clear the `IsBusy` flag.
+
+The only thing we are doing now is swapping out our main page for a new main page. This is where we will attach authentication later on.  The next page is the task list page, which is in `Pages/TaskList.xaml`.  Create it the same way as the entry page.  Here is the XAML for the page:
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Frontend.Pages.TaskList"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="{Binding Title}">
+    <ContentPage.Content>
+        <StackLayout>
+            <ListView
+                BackgroundColor="#7F7F7F"
+                CachingStrategy="RecycleElement"
+                IsPullToRefreshEnabled="True"
+                IsRefreshing="{Binding IsBusy, Mode=OneWay}"
+                ItemsSource="{Binding Items}"
+                RefreshCommand="{Binding RefreshCommand}"
+                RowHeight="50"
+                SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout
+                                Padding="10"
+                                HorizontalOptions="FillAndExpand"
+                                Orientation="Horizontal"
+                                VerticalOptions="CenterAndExpand">
+                                <Label
+                                    HorizontalOptions="FillAndExpand"
+                                    Text="{Binding Text}"
+                                    TextColor="#272832" />
+                                <Switch IsToggled="{Binding Complete, Mode=OneWay}" />
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+                <Button
+                    BackgroundColor="Teal"
+                    Command="{Binding AddNewItemCommand}"
+                    Text="Add New Item"
+                    TextColor="White" />
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
+```
+
+Note that some bindings here are one-way. This means that the value in the view-model drives the value in the UI. There is nothing within the UI that you can do to alter the state of the underlying property. Some bindings are two-way. Doing something in the UI (for example, toggling the switch) alters the underlying property.
+
+This view is a little more complex. It can be split into two parts - the list at the top of the page and the button area at the bottom of the page. The list area uses a template to help with the display of each item.  The `ListView` object has a "pull-to-refresh" option that I will wire up so that when pulled (a standard gesture on mobile devices to indicate a refresh is requested), it calls the `RefreshCommand`. It also has an indicator that I have wired up to the `IsBusy` indicator.
+
+The code behind in `Pages\TaskList.xaml.cs`:
+
+```csharp
+using Frontend.ViewModels;
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
+
+namespace Frontend.Pages
+{
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class TaskList : ContentPage
+    {
+        public TaskList()
+        {
+            InitializeComponent();
+            BindingContext = new TaskListViewModel();
+        }
+    }
+}
+```
+
+there is also a view-model that goes with the view:
+
+```csharp
+```
 
 [1]: https://docs.microsoft.com/en-us/xamarin/android/get-started/installation/android-emulator/hardware-acceleration?tabs=vswin&pivots=windows#hyper-v
 [2]: https://mockingbot.com/app/RQe0vlW0Hs8SchvHQ6d2W8995XNe8jK#screen=s8BD92432F11467855027824
