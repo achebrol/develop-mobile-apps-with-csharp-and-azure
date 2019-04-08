@@ -479,7 +479,158 @@ namespace Frontend.Pages
 there is also a view-model that goes with the view:
 
 ```csharp
+using Frontend.Models;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
+using System.Threading.Tasks;
+using Xamarin.Forms;
+
+namespace Frontend.ViewModels
+{
+    class TaskListViewModel : BaseViewModel
+    {
+        public TaskListViewModel()
+        {
+            Title = "Task List";
+            RefreshList();
+        }
+
+        ObservableCollection<TodoItem> items = new ObservableCollection<TodoItem>();
+        public ObservableCollection<TodoItem> Items
+        {
+            get { return items;  }
+            set { SetProperty(ref items, value, "Items");  }
+        }
+
+        TodoItem selectedItem;
+        public TodoItem SelectedItem
+        {
+            get { return selectedItem; }
+            set { SetProperty(ref selectedItem, value, "SelectedItem"); }
+        }
+
+        Command refreshCmd;
+        public Command RefreshCommand => refreshCmd ?? (refreshCmd = new Command(async () => await ExecuteRefreshCommand()));
+
+        async Task ExecuteRefreshCommand()
+        {
+            if (IsBusy) return;
+            IsBusy = true;
+
+            try
+            {
+                var table = App.cloudClient.GetTable<TodoItem>();
+                var list = await table.ReadAllItemsAsync();
+                Items.Clear();
+                foreach (var item in list)
+                {
+                    Items.Add(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[Refresh] Error = {ex.Message}");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        Command addNewCmd;
+        public Command AddNewItemCommand => addNewCmd ?? (addNewCmd = new Command(async () => await ExecuteAddNewItemCommand()));
+
+        async Task ExecuteAddNewItemCommand()
+        {
+            if (IsBusy)
+                return;
+            IsBusy = true;
+
+            try
+            {
+                await Application.Current.MainPage.Navigation.PushAsync(new Pages.TaskDetail());
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[TaskList] Error in AddNewItem: {ex.Message}");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        async Task RefreshList()
+        {
+            await ExecuteRefreshCommand();
+            MessagingCenter.Subscribe<TaskDetailViewModel>(this, "ItemsChanged", async (sender) =>
+            {
+                await ExecuteRefreshCommand();
+            });
+        }
+    }
+}
 ```
+
+This is a combination of the patterns we have seen earlier. The Add New Item and Refresh commands should be fairly normal patterns now. We navigate to the detail page (more on that later) in the case of selecting an item (which occurs when the UI sets the `SelectedItem` property through a two-way binding) and when the user clicks on the Add New Item button. When the Refresh button is clicked (or when the user opens the view for the first time), the list is refreshed. It is fairly common to use an `ObservableCollection` or another class that uses the `ICollectionChanged` event handler for the list storage. Doing so allows the UI to react to changes in the items.
+
+Note the use of the `ICloudTable` interface here. We are using the `ReadAllItemsAsync()` method to get a list of items, then we copy the items we received into the `ObservableCollection`.
+
+Finally, there is the TaskDetail page. This is defined in the `Pages\TaskDetail.xaml` file:
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Frontend.Pages.TaskDetail"
+             Title="{Binding Title}">
+    <ContentPage.Content>
+        <StackLayout Padding="10" Spacing="10">
+            <Label Text="What should I be doing?"/>
+            <Entry Text="{Binding Item.Text}"/>
+            <Label Text="Completed?"/>
+            <Switch IsToggled="{Binding Item.Complete}"/>
+            <StackLayout VerticalOptions="CenterAndExpand"/>
+            <StackLayout Orientation="Vertical" VerticalOptions="End">
+                <StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+                    <Button BackgroundColor="#A6E55E"
+                  Command="{Binding SaveCommand}"
+                  Text="Save" TextColor="White"/>
+                    <Button BackgroundColor="Red"
+                  Command="{Binding DeleteCommand}"
+                  Text="Delete" TextColor="White"/>
+                </StackLayout>
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
+```
+
+This page is a simple form with just two buttons that need to have commands wired up. However, this page is used for both the "Add New Item" gesture and the "Edit Item" gesture. As a result of this, we need to handle the passing of the item to be edited. This is done in the `Pages\TaskDetail.xaml.cs` code-behind file:
+
+```csharp hl_lines="14"
+using Frontend.Models;
+using Frontend.ViewModels;
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
+
+namespace Frontend.Pages
+{
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class TaskDetail : ContentPage
+    {
+        public TaskDetail(TodoItem item = null)
+        {
+            InitializeComponent();
+            BindingContext = new TaskDetailViewModel(item);
+        }
+    }
+}
+```
+
+
 
 [1]: https://docs.microsoft.com/en-us/xamarin/android/get-started/installation/android-emulator/hardware-acceleration?tabs=vswin&pivots=windows#hyper-v
 [2]: https://mockingbot.com/app/RQe0vlW0Hs8SchvHQ6d2W8995XNe8jK#screen=s8BD92432F11467855027824
