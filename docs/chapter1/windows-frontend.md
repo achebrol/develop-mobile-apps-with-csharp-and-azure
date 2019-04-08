@@ -629,6 +629,101 @@ namespace Frontend.Pages
     }
 }
 ```
+The item that is passed in from the `TaskList` page is used to create a specific view-model for that item. The view-model is similarly configured to use that item:
+
+```csharp
+using Frontend.Models;
+using Frontend.Services;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Xamarin.Forms;
+
+namespace Frontend.ViewModels
+{
+    class TaskDetailViewModel : BaseViewModel
+    {
+        IDataTable<TodoItem> table = App.cloudClient.GetTable<TodoItem>();
+
+        public TaskDetailViewModel(TodoItem item = null)
+        {
+            Item = (item != null) ? item : new TodoItem { Title = "New Item", IsComplete = false };
+            Title = Item.Title;
+        }
+
+        public TodoItem Item { get; set; }
+
+        Command cmdSave;
+        public Command SaveCommand => cmdSave ?? (cmdSave = new Command(async () => await ExecuteSaveCommand()));
+
+        async Task ExecuteSaveCommand()
+        {
+            if (IsBusy)
+                return;
+            IsBusy = true;
+
+            try
+            {
+                if (Item.Id == null)
+                {
+                    TodoItem createdItem = await table.CreateItemAsync(Item);
+                    Item.Id = createdItem.Id;
+                    Title = Item.Title;
+                }
+                else
+                {
+                    await table.UpdateItemAsync(Item);
+                }
+                MessagingCenter.Send<TaskDetailViewModel>(this, "ItemsChanged");
+                await Application.Current.MainPage.Navigation.PopAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[TaskDetail] Save error: {ex.Message}");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        Command cmdDelete;
+        public Command DeleteCommand => cmdDelete ?? (cmdDelete = new Command(async () => await ExecuteDeleteCommand()));
+
+        async Task ExecuteDeleteCommand()
+        {
+            if (IsBusy)
+                return;
+            IsBusy = true;
+
+            try
+            {
+                if (Item.Id != null)
+                {
+                    await table.DeleteItemAsync(Item);
+                }
+                MessagingCenter.Send<TaskDetailViewModel>(this, "ItemsChanged");
+                await Application.Current.MainPage.Navigation.PopAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[TaskDetail] Save error: {ex.Message}");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+    }
+}
+```
+
+The save command uses the `ICloudTable` interface again - this time doing either `CreateItemAsync()` or `UpdateItemAsync()` to create or update the item. On creation, copy the returned item Id into the Item object so that future writes will work. The delete command, as you would expect, deletes the item with the `DeleteItemAsync()` method.  The final thing to note from our views is that I am using the `MessagingCenter` to communicate between the `TaskDetail` and `TaskList` views. If I change the item in the `TaskDetail` list, then I want to update the list in the `TaskList` view.
+
+Note that all the code we have added to the solution thus far is in the common `TaskList` project. Nothing is required for this simple example in a platform specific project. That isn't normal, as we shall see in later chapters.
+
+## Build the Android Client
+
 
 
 
