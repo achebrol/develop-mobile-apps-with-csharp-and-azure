@@ -14,12 +14,12 @@ Visual Studio contains a lot of tooling and we will be using a fair amount of th
 2. Find and select the **ASP.NET Core Web Application** template, then click **Next**.
 3. Select a new solution and project name, and pick a suitable location for the code.  Ensure the **Place solution and project in the same directory** is not checked.
 
-   ![](img/backend-pc-image2.png)
+       ![](img/backend-pc-image2.png)
 
 4. Click **Create**.
 5. In the **Create a new ASP.NET Core Web Application** dialog, select the **API** template and ensure **ASP.NET Core 2.2** is selected as the runtime.
 
-   ![](./backend-pc-image3.png)
+       ![](img/backend-pc-image3.png)
 
 6. Click **Create**.
 
@@ -125,7 +125,7 @@ The next step is to add some HTTP methods that can be used to access the data:
 1. Right-click the _Controllers_ folder, click **Add** > **Controller...**.
 2. Select **API Controller with actions, using Entity Framework**:
 
-   ![](./img/backend-pc-image4.png)
+       ![](img/backend-pc-image4.png)
 
 3. Click **Add**.
 4. Fill in the presented form as follows:
@@ -133,7 +133,7 @@ The next step is to add some HTTP methods that can be used to access the data:
     * Data context class: **TodoContext (Backend.Models)**
     * Controller name: **TodoItemsController**
 
-   ![](./img/backend-pc-image5.png)
+       ![](img/backend-pc-image5.png)
 
 5. Click **Add**.
 
@@ -141,7 +141,7 @@ As a developer, I feel guilty for a second for using scaffolding.  However, thes
 
 ## Test your work!
 
-Before we talk about the front end, let's talk about testing.  In an ideal world, we would add a test project, write unit tests for all our classes, then add some integration tests to ensure our backend worked properly.  We would then run those before every single check-in.  I strongly urge you to [learn how to write those tests][5].  However, this is a very basic backend.  Instead of the comprehensive testing capabilities I suggest, let's ensure we do a few [smoke tests][6] before starting on the front end.
+Before we talk about the front end, let's talk about testing.  In an ideal world, we would add a test project, write unit tests for all our classes, then add some integration tests to ensure our backend worked properly.  We would then run those before every single check-in.  I strongly urge you to [learn how to write those tests][5].  However, this is a very basic backend.  Let's, instead, do a few [smoke tests][6] before starting on the front end.
 
 Start by installing [Postman][7].
 
@@ -160,17 +160,18 @@ This will launch a browser with the URL of your backend.  Make a note of the bas
 Minimize the browser since you won't be using it.  Instead, start Postman.  
 
 !!! tip
-    Configure SSL certificate verification when you first install Postman.  To do this, go to **Settings** > **General**.  Turn off the **SSL certificate verification** switch, then close the Settings pane.
+    Configure SSL certificate verification when you first install Postman.  To do this, go to **File** > **Settings** > **General**.  Turn off the **SSL certificate verification** switch, then close the Settings pane.
 
 Go to `https://localhost:44313/api/todoitems`.  You should receive an empty JSON array as a response, which makes sense.  We have not created any tasks yet.  
 
-![](./img/backend-pc-image7.jpg)
+![](./img/backend-pc-image7.png)
 
 Let's create a task:
 
 1. Select **POST** as the method.
 2. Click **Body**.
-3. Select **raw** and **JSON (application/json)**.
+3. Select **raw**  for the body type.
+4. In the drop-down (which will say **Text** initially), select **JSON (application/json)**.
 4. Enter the following JSON into the body box:
 
     ```json
@@ -185,11 +186,11 @@ Let's create a task:
 
 You should see a `201 Created` status and the updated item:
 
-![](./img/backend-pc-image8.jpg)
+![](img/backend-pc-image8.png)
 
 If you repeat the `GET` request (which you can do by clicking on the item in the history and selecting **SEND**), then you will see the new item:
 
-![](./img/backend-pc-image9.jpg)
+![](img/backend-pc-image9.png)
 
 You can add additional items in a similar way.  Just ensure that you change the id of each one.  
 
@@ -197,7 +198,7 @@ You can add additional items in a similar way.  Just ensure that you change the 
 
 If you wish to update a record, you will need to post to the unique ID.  Try changing a record by using `PUT /api/todoitems/item1`:
 
-![](./img/backend-pc-image10.jpg)
+![](img/backend-pc-image10.png)
 
 We don't get any content back - just a success code.  If, however, we repeat the `GET /api/todoitems` request, we will see the updated data.
 
