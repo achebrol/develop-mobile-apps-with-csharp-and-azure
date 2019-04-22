@@ -233,7 +233,7 @@ A few notes about this class as well:
 
 It is normal to develop network clients as singletons.  Generally, the client will be doing more than what we are doing here.  This may include caching and database access.  The `HttpClient` object is a session that shares configuration options and TCP connections.  It will help reuse TCP connections, which will, in general, lead to better performance.  This is especially true in a mobile context where the device is resource constrained.  My implementation is not a singleton, but we can make it so by either implementing the [Singleton pattern](https://www.c-sharpcorner.com/UploadFile/8911c4/singleton-design-pattern-in-C-Sharp/).  In Xamarin, we have an alternative.  We can instantiate the client in the `Application` method (located in the `App.xaml.cs` file), which is instantiated as a singleton class as well:
 
-```csharp hl_lines="8"
+```csharp hl_lines="8,13"
 using Frontend.Services;
 using Xamarin.Forms;
 
@@ -246,11 +246,13 @@ namespace Frontend
         public App()
         {
             InitializeComponent();
-            MainPage = new MainPage();
+            MainPage = new EntryPage();
         }
     }
 }
 ```
+
+Note line 13.  This establishes the entry page for the application.  There is a default entry point called `MainPage` which displays "Welcome to Xamarin.Forms!"  We want to point to our application entry point instead.  We'll develop this entry point in the next section.  You can also delete the `MainPage.xaml` page from your project, should you like to keep things clean.
 
 ## Build the UI
 
@@ -722,8 +724,19 @@ The save command uses the `ICloudTable` interface again - this time doing either
 
 Note that all the code we have added to the solution thus far is in the common `TaskList` project. Nothing is required for this simple example in a platform specific project. That isn't normal, as we shall see in later chapters.
 
-## Build the Android Client
+## Run the Android Client
 
+Since we have placed all projects in the same solution, we need to do a little extra work to get both the server and client running together.  
+
+* Right-click on the Solution, then select **Properties**.
+* In the left-hand menu, select **Startup Project**.
+* Select **Multiple startup projects**.
+* Change the action to **Start** on the **Backend** and **Frontend.Android** projects.
+* Click **OK**.
+
+![](img/frontend-pc-image6.png)
+
+Click the **Start** button in the menu to start both the backend and an emulator to run the frontend.
 
 
 

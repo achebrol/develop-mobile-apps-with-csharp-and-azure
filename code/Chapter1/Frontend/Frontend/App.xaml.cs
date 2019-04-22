@@ -1,4 +1,5 @@
-﻿using Frontend.Services;
+﻿using Frontend.Pages;
+using Frontend.Services;
 using Xamarin.Forms;
 
 namespace Frontend
@@ -10,7 +11,7 @@ namespace Frontend
         public App()
         {
             InitializeComponent();
-            MainPage = new MainPage();
+            MainPage = new EntryPage();
         }
     }
 }
