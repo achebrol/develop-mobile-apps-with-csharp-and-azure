@@ -1,7 +1,7 @@
 # Build a Mobile App on Windows
 
-!!! tip "Enable Android Emulator on Hyper-V"
-    Before getting started with development on the front end, you may want to set up an Android emulator.  This requires [setting up Hyper-V on your Windows system][1].  Since this will likely require a reboot of your system, it's best to configure Hyper-V ahead of time.
+!!! tip "Enable Android Emulator on HAXM"
+    Before getting started with development on the front end, you may want to set up an Android emulator.  This requires [disabling Hyper-V on your Windows system][1], then [installing HAXM][4].  Since this will likely require a reboot of your system, it's best to configure virtualization ahead of time.  If you are in an enterprise setting, some of the settings that need to be changed may require additional configuration from your IT organization.
 
 Now that the mobile backend is created, we can move to the client side of things.  If you have previously closed your project, re-open the project in Visual Studio now.  The first step is to add a new project to the solution that will represent our mobile app.
 
@@ -740,7 +740,8 @@ Click the **Start** button in the menu to start both the backend and an emulator
 
 
 
-[1]: https://docs.microsoft.com/en-us/xamarin/android/get-started/installation/android-emulator/hardware-acceleration?tabs=vswin&pivots=windows#hyper-v
+[1]: https://docs.microsoft.com/en-us/xamarin/android/get-started/installation/android-emulator/troubleshooting?tabs=vswin&pivots=windows#disable-devguard
 [2]: https://mockingbot.com/app/RQe0vlW0Hs8SchvHQ6d2W8995XNe8jK#screen=s8BD92432F11467855027824
 [3]: https://mockingbot.com/
+[4]: https://docs.microsoft.com/en-us/xamarin/android/get-started/installation/android-emulator/hardware-acceleration?pivots=windows
 
