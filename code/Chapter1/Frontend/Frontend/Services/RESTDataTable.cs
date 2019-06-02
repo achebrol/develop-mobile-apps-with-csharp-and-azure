@@ -19,7 +19,7 @@ namespace Frontend.Services
             client.BaseAddress = endpoint;
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            tablePath = $"{client.BaseAddress}/{path}";
+            tablePath = path;
             Debug.WriteLine($"new RESTDataTable {tablePath}");
         }
 
@@ -74,23 +74,23 @@ namespace Frontend.Services
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            Console.WriteLine("Request:");
-            Console.WriteLine(request.ToString());
+            Debug.WriteLine($"----> REQUEST {request.Method} {request.RequestUri}");
+            Debug.WriteLine(request.ToString());
             if (request.Content != null)
             {
-                Console.WriteLine(await request.Content.ReadAsStringAsync());
+                Debug.WriteLine(await request.Content.ReadAsStringAsync());
             }
-            Console.WriteLine();
+            Debug.WriteLine("----> END OF REQUEST");
 
             HttpResponseMessage response = await base.SendAsync(request, cancellationToken);
 
-            Console.WriteLine("Response:");
-            Console.WriteLine(response.ToString());
+            Debug.WriteLine($"----> RESPONSE {response.StatusCode}");
+            Debug.WriteLine(response.ToString());
             if (response.Content != null)
             {
-                Console.WriteLine(await response.Content.ReadAsStringAsync());
+                Debug.WriteLine(await response.Content.ReadAsStringAsync());
             }
-            Console.WriteLine();
+            Debug.WriteLine("----> END OF RESPONSE");
 
             return response;
         }

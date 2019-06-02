@@ -155,7 +155,7 @@ namespace Frontend.Services
 
 There are a couple of notes about this implementation:
 
-* This is where I store the endpoint to my API.  Windows doesn't understand _localhost_ so I am using the explicit IP address.
+* This is where I store the endpoint to my API. 
 * I get the name of the table from the model.  Thus, if I pass in `TodoItem` as the model, then `tableName` is `todoitem`, and the path is `api/todoitems`.
 
 I use a pretty standard REST client implementation for the `RESTDataTable` class:

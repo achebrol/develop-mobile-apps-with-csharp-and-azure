@@ -25,7 +25,7 @@ namespace Backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
         {
-            Debug.WriteLine("GetTodoItems();");
+            Console.WriteLine("GetTodoItems();");
             return await _context.TodoItems.ToListAsync();
         }
 
@@ -33,7 +33,7 @@ namespace Backend.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoItem>> GetTodoItem(string id)
         {
-            Debug.WriteLine($"GetTodoItem(\"{id}\");");
+            Console.WriteLine($"GetTodoItem(\"{id}\");");
             var todoItem = await _context.TodoItems.FindAsync(id);
 
             if (todoItem == null)
@@ -48,7 +48,7 @@ namespace Backend.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTodoItem(string id, TodoItem todoItem)
         {
-            Debug.WriteLine($"PutTodoItem(\"{id}\");");
+            Console.WriteLine($"PutTodoItem(\"{id}\");");
             if (id != todoItem.Id)
             {
                 return BadRequest();
@@ -79,7 +79,7 @@ namespace Backend.Controllers
         [HttpPost]
         public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
         {
-            Debug.WriteLine("PostTodoItem();");
+            Console.WriteLine("PostTodoItem();");
             _context.TodoItems.Add(todoItem);
             await _context.SaveChangesAsync();
 
@@ -90,7 +90,7 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<TodoItem>> DeleteTodoItem(string id)
         {
-            Debug.WriteLine($"DeleteTodoItem(\"{id}\");");
+            Console.WriteLine($"DeleteTodoItem(\"{id}\");");
             var todoItem = await _context.TodoItems.FindAsync(id);
             if (todoItem == null)
             {
