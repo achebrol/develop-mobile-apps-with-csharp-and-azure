@@ -142,7 +142,7 @@ namespace Frontend.Services
 {
     public class AzureCloudServiceClient : ICloudServiceClient
     {
-        protected Uri baseUri = new Uri("https://localhost:44398");
+        protected Uri baseUri = new Uri("https://127.0.0.1:44398");
 
         public IDataTable<T> GetTable<T>() where T : TableData
         {
@@ -155,7 +155,7 @@ namespace Frontend.Services
 
 There are a couple of notes about this implementation:
 
-* This is where I store the endpoint to my API.
+* This is where I store the endpoint to my API.  Windows doesn't understand _localhost_ so I am using the explicit IP address.
 * I get the name of the table from the model.  Thus, if I pass in `TodoItem` as the model, then `tableName` is `todoitem`, and the path is `api/todoitems`.
 
 I use a pretty standard REST client implementation for the `RESTDataTable` class:
@@ -737,6 +737,10 @@ Since we have placed all projects in the same solution, we need to do a little e
 ![](img/frontend-pc-image6.png)
 
 Click the **Start** button in the menu to start both the backend and an emulator to run the frontend.
+
+!!! tip "Deployment Errors?"
+    The most common deployment error is that Visual Studio cannot find a suitable Android emulator.  Click the drop-down next to the **Start** button, then select **Create Android Emulator...** to create a new one.
+
 
 
 
