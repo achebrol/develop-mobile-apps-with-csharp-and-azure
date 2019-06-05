@@ -125,5 +125,56 @@ Here, you can see the ID is now a universally unique ID.
 
 ## Build a cloud service
 
+Now that we have our app working with globally unique IDs, we can move on to storing the data in the cloud.  This is done in two steps.  First, we will create and test an ASP.NET Core based web service that provides a `todoitems` endpoint for which you can do standard CRUDL (**C**reate, **R**ead, **U**pdate, **D**elete, **L**ist) operations.  Then we will rewrite the `TodoItemDatabase` class in our app to access the new web service.
+
+First, ensure you have the right .NET Core runtime available.  Open a PowerShell prompt and type `dotnet --info`:
+
+![](img/windows-intro-4.png)
+
+Ensure the version is 2.2.x - it's ok to be a later patch version.  Next, open the app solution in Visual Studio 2019 and create a project:
+
+* Right-click the solution in the Solution Explorer, then select **Add** > **New Project...**
+* Select **ASP.NET Core Web Application** from the project template list, then click **Next**.
+
+    ![](img/windows-intro-5.png)
+
+* Enter the project name `Todo.Backend`.  Ensure the location is within the solution directory, then click **Create**.
+* Select the **API** perspective, then click **Create**.
+
+    ![](img/windows-intro-6.png)
+
+The project will now be created with a single `ValuesController` route.  This provides an `/api/values` endpoint that you can query. We don't need this controller, so it's safe to delete it.  In this tutorial, we are going to use a lot of the Visual Studio 2019 tooling to auto-generate a complete (but simple) backend service for our app. This will have the following endpoints:
+
+* `GET /api/todoitems` will get a list of all the todo items in the database.
+* `GET /api/todoitems/{id}` will get a single todo item.  The id is the user-visible unique ID.
+* `POST /api/todoitems` will add a new item, returning the new item complete with all information.
+* `PUT /api/todoitems/{id}` will replace the content of the old item, returning the new item.
+* `DELETE /api/todoitems/{id}` will delete an existing items.
+
+These all have a corresponding method inside the `TodoItemDatabase.cs` class within the app.
+
+It's normal to organize code into separate concerns within an ASP.NET Core (or, for that matter, any) app.  We have two distinct concerns: `Data` will hold the `TodoItem` model class and the database context, and `Controllers` will hold the handler for the endpoint.  `Controllers` already exists, but you will need to create a folder for `Data`.  Right-click on the `Todo.Backend` project, then select **Add** > **New Folder** to add a new folder.
+
+### Implementing a database context
+
+Before we code an endpoint controller, we need a database to talk to.  In this example, we're going to use an in-memory database.  First, set up a model in `Data/TodoItem.cs`:
+
+```csharp
+namespace Todo.Backend.Data
+{
+    public class TodoItem
+    {
+        public string ID { get; set; }
+        public string Name { get; set; }
+        public string Notes { get; set; }
+        public bool Done { get; set; }
+    }
+}
+```
+
+It looks remarkably similar to the model in the app.  That is not a mistake.  Generally, models in an app will have a significant overlap to models in the service.  However, it's not a 1-to-1 mapping.  
+
+* There are client fields that may not be exposed.  For example, a client may have a `deleted` flag which indicates that the record has not been deleted on the service yet.  Once it is deleted, the record will be purged from the client.  Similarly, the internal ID may be required on the client as an internal record-keeper in a local cache.
+* There are service fields that are not exposed.  For example, if you had a CRM and it contained all the purchases for a client, you may not want to drop them onto the client unless requested.  It's common to use a `ViewModel` to indicate the "view of the model that the client sees" and to instantiate a ViewModel from the contents of a Model for this purpose.
 
 
