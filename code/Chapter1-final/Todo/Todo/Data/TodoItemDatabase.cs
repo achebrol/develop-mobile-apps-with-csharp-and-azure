@@ -1,15 +1,17 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using SQLite;
 
 namespace Todo.Data
 {
     public class TodoItemDatabase
     {
-        private static readonly string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "todoitems2.db3");
-        private readonly SQLiteAsyncConnection database;
+        private static readonly Uri siteUri = new Uri("https://todobackend20190607091840.azurewebsites.net");
+        private static readonly string endpoint = "api/todoitems";
+        private readonly HttpClient httpClient = new HttpClient();
 
         #region Singleton
         private static TodoItemDatabase instance;
@@ -20,46 +22,70 @@ namespace Todo.Data
             {
                 if (instance == null)
                 {
-                    instance = new TodoItemDatabase(dbPath);
+                    instance = new TodoItemDatabase(siteUri);
                 }
                 return instance;
             }
         }
         #endregion
 
-        private TodoItemDatabase(string dbPath)
+        private TodoItemDatabase(Uri siteUri)
         {
-            database = new SQLiteAsyncConnection(dbPath);
-            database.CreateTableAsync<TodoItem>().Wait(); // turns the async operation into a synchronous one
+            httpClient.BaseAddress = siteUri;
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public Task<List<TodoItem>> GetAllItemsAsync()
+        public async Task<List<TodoItem>> GetAllItemsAsync()
         {
-            return database.Table<TodoItem>().ToListAsync();
+            var response = await httpClient.GetAsync(endpoint);
+            response.EnsureSuccessStatusCode();
+            var jsonString = await response.Content.ReadAsStringAsync();
+            List<TodoItem> result = JsonConvert.DeserializeObject<List<TodoItem>>(jsonString);
+            return result;
         }
 
-        public Task<TodoItem> GetItemAsync(string id)
+        public async Task<TodoItem> GetItemAsync(string id)
         {
-            return database.Table<TodoItem>().Where(i => i.ID == id).FirstOrDefaultAsync();
+            var response = await httpClient.GetAsync($"{endpoint}/{id}");
+            response.EnsureSuccessStatusCode();
+            var jsonString = await response.Content.ReadAsStringAsync();
+            TodoItem result = JsonConvert.DeserializeObject<TodoItem>(jsonString);
+            return result;
         }
 
         public async Task<TodoItem> SaveItemAsync(TodoItem item)
         {
-            if (item.internalID != 0) {
-                await database.UpdateAsync(item);
+            HttpResponseMessage response;
+            bool usePost = false;
+
+            if (item.ID == null)
+            {
+                item.ID = Guid.NewGuid().ToString();
+                usePost = true;
+            }
+
+            var content = new ByteArrayContent(System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(item)));
+
+            if (usePost)
+            {
+                response = await httpClient.PostAsync(endpoint, content);
             }
             else
             {
-                item.ID = Guid.NewGuid().ToString();
-                int internalID = await database.InsertAsync(item);
-                item.internalID = internalID;
+                response = await httpClient.PutAsync($"{endpoint}/{item.ID}", content);
             }
-            return item;
+
+            response.EnsureSuccessStatusCode();
+            var jsonString = await response.Content.ReadAsStringAsync();
+            TodoItem result = JsonConvert.DeserializeObject<TodoItem>(jsonString);
+            return result;
         }
 
         public async Task DeleteItemAsync(TodoItem item)
         {
-            await database.DeleteAsync(item);
+            var response = await httpClient.DeleteAsync($"{endpoint}/{item.ID}");
+            response.EnsureSuccessStatusCode();
         }
     }
 }
