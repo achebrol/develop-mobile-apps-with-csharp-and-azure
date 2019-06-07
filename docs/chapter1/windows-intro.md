@@ -471,7 +471,7 @@ We have accomplished a lot in this short tutorial:
 
 It's time to move on.  Over the next several chapters, we will take an in-depth look at the common functionality that is generally required by mobile apps and how the cloud can be used to implement these features.  
 
-We start with [authentication](../chapter2/index.md)
+We start with [deploying your mobile backend](../chapter2/index.md).
 
 <!-- Links -->
 [github-repo]: https://github.com/adrianhall/develop-mobile-apps-with-csharp-and-azure
