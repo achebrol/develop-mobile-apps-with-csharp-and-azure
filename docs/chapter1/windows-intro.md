@@ -415,6 +415,7 @@ public async Task<TodoItem> SaveItemAsync(TodoItem item)
     }
 
     var content = new ByteArrayContent(System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(item)));
+    content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
     if (usePost)
     {
@@ -445,11 +446,19 @@ Most of the methods are similar:
 * Ensure the response is successful.
 * Deserialize the response and return to the app.
 
-The only variance from this is the `SaveItemAsync()` method.  This needs to understand whether the data is new or not.  If it is new, then the ID will be null (since the database sets the ID).  We can use this fact to call the appropriate method on the web service (via a POST or a PUT).
+The only variance from this is the `SaveItemAsync()` method.  This needs to understand whether the data is new or not.  If it is new, then the ID will be null (since the database sets the ID).  We can use this fact to call the appropriate method on the web service (via a POST or a PUT).  This is also the only place where we have to serialize content.  We must ensure we set the appropriate HTTP content type when serializing. 
 
 ### Run the app on Android
 
+If you run the app on the Android emulator, you will notice it works exactly the same way.  However, there is more of a delay in various pages actually producing content.  This is because we have increased the latency by moving the database to the cloud.
 
+## Run the app on iOS
+
+We have, thus far, used the Android emulator to do all of our development.  This is fairly normal when developing on Windows as you need an extra machine - a Mac - to compile iOS applications.  I use a Macbook for this, and I've installed the both [XCode][xcode] and [Visual Studio for Mac][vsmac] on the Mac.  In addition, I've opened both applications at least once to agree to the license agreements, update to the latest versions, and do some housekeeping.  In addition, I've linked my XCode instance to my Apple Developer Account, although this step is strictly optional for most of the tutorials in this book.  I'll tell you when having an Apple Developer Account is not optional.
+
+To link your Windows development PC to your Mac, you need to enable remote login and then pair your Mac. This works best when the PC and Mac are on the same network. You can find full details on this process, including a troubleshooting guide, in the [Xamarin documentation][pair-mac-docs].  Note that you don't need to actually look at the Mac during the development process.  Everything is handled from the Visual Studio IDE.
+
+TODO: Finalize the screen shots for the iOS version of the app.
 
 ## What have we accomplished?
 
@@ -469,3 +478,4 @@ We start with [authentication](../chapter2/index.md)
 [sample]: https://developer.xamarin.com/samples/xamarin-forms/Todo/
 [postman]: https://www.getpostman.com/
 [azure-signup]: https://azure.microsoft.com/en-us/free/
+[pair-mac-docs]: https://docs.microsoft.com/en-us/xamarin/ios/get-started/installation/windows/connecting-to-mac/

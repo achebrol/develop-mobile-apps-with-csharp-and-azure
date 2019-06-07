@@ -66,6 +66,7 @@ namespace Todo.Data
             }
 
             var content = new ByteArrayContent(System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(item)));
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
             if (usePost)
             {
