@@ -127,7 +127,7 @@ Here, we can see the ID is now a universally unique ID.
 
 Now that we have our app working with globally unique IDs, we can move on to storing the data in the cloud.  This is done in two steps.  First, we will create and test an ASP.NET Core based web service that provides a `todoitems` endpoint for which you can do standard CRUDL (**C**reate, **R**ead, **U**pdate, **D**elete, **L**ist) operations.  Then we will rewrite the `TodoItemDatabase` class in our app to access the new web service.
 
-Let's make sure we have the right .NET Core runtime available.  Open a PowerShell prompt and type `dotnet --info`:
+Let's make sure we have the right .NET Core runtime available.  Open a Terminal prompt and type `dotnet --info`:
 
 ![](img/windows-intro-4.png)
 
@@ -177,7 +177,7 @@ It looks remarkably similar to the model in the app.  That is not a mistake.  Ge
 * There are client fields that may not be exposed.  For example, a client may have a `deleted` flag which indicates that the record has not been deleted on the service yet.  Once it is deleted, the record will be purged from the client.  Similarly, the internal ID may be required on the client as an internal record-keeper in a local cache.
 * There are service fields that are not exposed.  For example, if you had a CRM and it contained all the purchases for a client, you may not want to drop them onto the client unless requested.  It's common to use a `ViewModel` to indicate the "view of the model that the client sees" and to instantiate a ViewModel from the contents of a Model for this purpose.
 
-The database context connects the model to the database table, allowing us to perform standard CRUD type operations on the database table.  Most of the context is handled in standard libraries, so we only need to provide an initialization stub:
+The database context connects the model to the database table, allowing us to perform standard CRUD type operations on the database table.  Most of the context is handled in standard libraries, so we only need to provide an initialization stub.  Create `Data/TodoItemsContext.cs` as follows:
 
 ```csharp
 using Microsoft.EntityFrameworkCore;
@@ -348,7 +348,7 @@ namespace Todo.Data
 {
     public class TodoItemDatabase
     {
-        private static readonly Uri siteUri = new Uri("https://todobackend20190607091840.azurewebsites.net");
+        private static readonly Uri siteUri = new Uri("https://REPLACEME.azurewebsites.net");
         private static readonly string endpoint = "api/todoitems";
         private readonly HttpClient httpClient = new HttpClient();
 
@@ -454,7 +454,7 @@ If you run the app on the Android emulator, you will notice it works exactly the
 
 ## Run the app on iOS
 
-We have, thus far, used the Android emulator to do all of our development.  This is fairly normal when developing on Windows as you need an extra machine - a Mac - to compile iOS applications.  I use a Macbook for this, and I've installed the both [XCode][xcode] and [Visual Studio for Mac][vsmac] on the Mac.  In addition, I've opened both applications at least once to agree to the license agreements, update to the latest versions, and do some housekeeping.  In addition, I've linked my XCode instance to my Apple Developer Account, although this step is strictly optional for most of the tutorials in this book.  I'll tell you when having an Apple Developer Account is not optional.
+We have, thus far, used the Android emulator to do all of our development.  This is fairly normal when developing on Windows as you need an extra machine - a Mac - to compile iOS applications.  I use a Macbook for this, and I've installed the both [XCode][xcode] and [Visual Studio for Mac][vsmac] on the Mac.  In addition, I've opened both applications at least once to agree to the license agreements, update to the latest versions, and do some housekeeping.  I've also linked my XCode instance to my Apple Developer Account, although this step is strictly optional for most of the tutorials in this book.  I'll tell you when having an Apple Developer Account is not optional.
 
 To link your Windows development PC to your Mac, you need to enable remote login and then pair your Mac. This works best when the PC and Mac are on the same network. You can find full details on this process, including a troubleshooting guide, in the [Xamarin documentation][pair-mac-docs].  Note that you don't need to actually look at the Mac during the development process.  Everything is handled from the Visual Studio IDE.
 
@@ -462,14 +462,32 @@ Once you have paired the Mac to Visual Studio, right-click the `Todo.iOS` projec
 
 ![](img/windows-intro-18.png)
 
-Select an appropriate one then click the Run button.  Visual Studio will connect to the Mac, transfer all the required pieces to the remote system, then run the build on the Mac, before transferring the artifacts back again.  In addition, it will start a remote simulator session that is displayed on your PC screen.  
+Select an appropriate simulator then click the Run button.  Visual Studio will connect to the Mac, transfer all the required pieces to the remote system, then run the build on the Mac, before transferring the artifacts back again.  In addition, it will start a remote simulator session that is displayed on your PC screen.  
 
 ![](img/windows-intro-19.png)
 
-Note that the data is the same on both the iOS and Android versions.  The data comes from the cloud, so whenever you refresh the data, it will match up.  It's also good to note that all the code within this app is in a common project.  This is not normally the case.  There is usually a small amount of per-platform code, particularly if you are looking to mimic the design choices for iOS and Android.  As an example, iOS apps tend to place the "add item" gesture in the top-right within the banner.  However, Android (through Material Design) places the same gesture in the lower-right as a floating action button.
+Note that the data is the same on both the iOS and Android versions.  The data comes from the cloud, so whenever you refresh the data, it will match up.  It's also good to note that all the code within this app is in a common project.  This is not normally the case, although the bulk of the code will be in the shared project.  There is usually a small amount of per-platform code, particularly if you are looking to mimic the design choices for iOS and Android.  As an example, iOS apps tend to place the "add item" gesture in the top-right within the banner.  However, Android (through Material Design) places the same gesture in the lower-right as a floating action button.
 
 !!! tip "The final code"
     You can find the final code in the `code/Chapter1-final` folder on the [GitHub repository][github-repo].
+
+## Delete the cloud backend
+
+Once you are done with this tutorial, you will want to clean up the Azure resources.
+
+* Within Visual Studio, click **View** > **Cloud Explorer**.
+* Within the Cloud Explorer, change the perspective from **Resource Types** to **Resource Groups**.
+* right-click the resource group that corresponds to your web service, and select **Open in Portal**.
+* You will be asked to log in with your Azure account.
+* Once logged in, select **Delete resource group**.
+
+    ![](img/windows-intro-20.png)
+
+* Type the name of the resource group, then click **Delete**.
+
+    ![](img/windows-intro-21.png)
+
+The deletion is done lazily and no further interaction is required to effect the deletion.
 
 ## What have we accomplished?
 
