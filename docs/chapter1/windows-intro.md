@@ -1,4 +1,4 @@
-# Build a Todo app with Xamarin.Forms
+# Build a cloud app on Windows
 
 Let's start by ensuring that the environment we are using for development is up to the task of mobile development by building and running a base app.  There is a `code` folder with all the code for the book n the [GitHub repository for this book][github-repo].  
 
@@ -467,6 +467,9 @@ Select an appropriate one then click the Run button.  Visual Studio will connect
 ![](img/windows-intro-19.png)
 
 Note that the data is the same on both the iOS and Android versions.  The data comes from the cloud, so whenever you refresh the data, it will match up.  It's also good to note that all the code within this app is in a common project.  This is not normally the case.  There is usually a small amount of per-platform code, particularly if you are looking to mimic the design choices for iOS and Android.  As an example, iOS apps tend to place the "add item" gesture in the top-right within the banner.  However, Android (through Material Design) places the same gesture in the lower-right as a floating action button.
+
+!!! tip "The final code"
+    You can find the final code in the `code/Chapter1-final` folder on the [GitHub repository][github-repo].
 
 ## What have we accomplished?
 

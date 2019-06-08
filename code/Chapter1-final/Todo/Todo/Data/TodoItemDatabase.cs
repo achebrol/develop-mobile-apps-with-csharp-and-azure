@@ -9,7 +9,7 @@ namespace Todo.Data
 {
     public class TodoItemDatabase
     {
-        private static readonly Uri siteUri = new Uri("https://todobackend20190607091840.azurewebsites.net");
+        private static readonly Uri siteUri = new Uri("https://REPLACEME.azurewebsites.net");
         private static readonly string endpoint = "api/todoitems";
         private readonly HttpClient httpClient = new HttpClient();
 

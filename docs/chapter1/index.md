@@ -1,4 +1,4 @@
-# A simple REST backend
+# Build a cloud app with Xamarin.Forms
 
 In this chapter, we are going to connect an existing mobile app to a backend service.  Writing Xamarin code with Xamarin.Forms and Visual Studio is covered by several other tutorials and books, I'm using [an existing sample app][sample].  There are two reasons to go through this tutorial:
 
