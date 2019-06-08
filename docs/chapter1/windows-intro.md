@@ -198,7 +198,7 @@ namespace Todo.Backend.Data
 
 Finally, we need to register the database context with the ASP.NET Core application so that it is available to any controllers that need it.  This is done within `Startup.cs`:
 
-```csharp hl_lines=6,7,23"
+```csharp hl_lines="6 7 23"
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
