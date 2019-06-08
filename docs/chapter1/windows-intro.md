@@ -458,7 +458,15 @@ We have, thus far, used the Android emulator to do all of our development.  This
 
 To link your Windows development PC to your Mac, you need to enable remote login and then pair your Mac. This works best when the PC and Mac are on the same network. You can find full details on this process, including a troubleshooting guide, in the [Xamarin documentation][pair-mac-docs].  Note that you don't need to actually look at the Mac during the development process.  Everything is handled from the Visual Studio IDE.
 
-TODO: Finalize the screen shots for the iOS version of the app.
+Once you have paired the Mac to Visual Studio, right-click the `Todo.iOS` project and select **Set as Startup Project...**.  You will find the run button has been replaced by all the iOS simulators:
+
+![](img/windows-intro-18.png)
+
+Select an appropriate one then click the Run button.  Visual Studio will connect to the Mac, transfer all the required pieces to the remote system, then run the build on the Mac, before transferring the artifacts back again.  In addition, it will start a remote simulator session that is displayed on your PC screen.  
+
+![](img/windows-intro-19.png)
+
+Note that the data is the same on both the iOS and Android versions.  The data comes from the cloud, so whenever you refresh the data, it will match up.  It's also good to note that all the code within this app is in a common project.  This is not normally the case.  There is usually a small amount of per-platform code, particularly if you are looking to mimic the design choices for iOS and Android.  As an example, iOS apps tend to place the "add item" gesture in the top-right within the banner.  However, Android (through Material Design) places the same gesture in the lower-right as a floating action button.
 
 ## What have we accomplished?
 

@@ -12,5 +12,7 @@ The sample I've chosen for this tutorial is a simple Todo app.  In its starting 
 * [Windows 10 on a PC](windows-intro.md)
 * [Mac OSX on a Mac](mac-intro.md)
 
+Which one should you choose if you have access to both?  Well, it depends on whether you prefer to operate on a PC or a Mac.  Personally, I am more productive on a PC since I use a PC for my day-to-day work.  I also find that extensions are more readily available for Visual Studio 2019 on a PC, allowing me increased productivity within Visual Studio.  However, if you use a Mac for your day-to-day work, or happen to prefer it when developing, use Visual Studio for Mac instead.  It's much more important that you be comfortable using your chosen environment.
+
 <!-- Links -->
 [sample]: https://github.com/xamarin/xamarin-forms-samples/tree/master/Todo
