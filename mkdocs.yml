@@ -7,6 +7,7 @@ copyright: 'Copyright &copy; 2017-2019 Adrian Hall'
 nav:
     - Getting Started: index.md
     - Introduction: chapter1/index.md
+    - Deployment: chapter2/index.md
 
 theme: 
   name: material
