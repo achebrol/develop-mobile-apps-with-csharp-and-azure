@@ -47,15 +47,62 @@ Let's look at the four options you could use:
 
 ### Virtual Machines
 
-### Azure Container Service
+If you want ultimate control at any cost, you can't get more basic than an architecture based on Virtual Machines.  You get to pick the virtual machine size, how much storage you want to provide, the operating system and environment that your app runs in and how it is exposed to the Internet. 
+
+![](img/index-1.png)
+
+The biggest plus to this environment is the control it gives you.  You can run anything on these virtual machines, and there do exist some libraries that require (for example) the Windows GDI to do rendering, or specific access to Active Directory that is only provided through a low-level interface.  The biggest downside to this architecture is its complexity.  This is a lot of management to do to keep your environment up to date in terms of security patching.  You are responsible for that.  Management of the infrastructure and deployments will take significant time away from your development tasks.
+
+Having a whole architecture as a mobile backend is not advised.  However, you may want to stand up a microservice to handle a specific functionality.  For example, if you need to use the Windows GDI platform to do rendering, you may run a microservice that just does that rendering.  You would then stand up a much smaller set of virtual machines behind a load balancer just for this function. 
+
+We won't be spending any time at all on this type of deployment because it's really not a good fit for mobile backends.
+
+### Containers
+
+The first type of mobile backend that we will consider is a containerized mobile backend.  Containers are a lightweight alternative to virtual machines.  You encapsulate the application within a runtime that is then run  by a container service - Docker on your development machine and an orchestrator like [Azure Kubernetes Service][aks] or [Service Fabric][service-fabric] within the Azure Cloud.  The good news about this (over a virtual machine) is that you can automate the build of a container through a continuous integration process (like [Azure DevOps][azure-devops]).  This allows you to ensure the application you are testing locally is actually the same application that you are deploying remotely, since the application is isolated from your development environment through the container encapsulation.  
+
+![](img/index-2.png)
+
+You still have to make some decisions and manage the environment.  Specifically, your Docker image will be based on a standard Docker image.  When that standard Docker image is updated, you will need to rebuild, test, and deploy a new application.  It's a lot less work than a virtual machine, and the use of standard images means you only have to monitor one place for security updates.  You also have to deal with scaling decisions - how big a processor and memory does each container get, and when do you scale up or down?
 
 ### Azure App Service
 
+If you don't like the idea of publishing a container and the necessary infrastructure needed to run containers in the cloud and on your development system, you may want to consider Azure App Service.  This service allows you to run a web application (like our ASP.NET Core application from Chapter 1) within a controlled environment.  Azure engineers take care of all the security patching and associated maintenance of the underlying system.  You get to decide how big the virtual environment is (in terms of CPU and memory), plus rules on when to scale up and down.  Once set up, the environment can be deployed automatically based on a source code repository, has multiple slots for handling multiple environments (to implement dev-test-production environments, or for A-B testing, for example), and has a host of other features, including the ability to attach a debugger to an in-cloud instance and integrate identity services within the app.
+
+![](img/index-3.png)
+
+The major problem with Azure App Service, Containers, and Virtual Machines is that you are paying for "idle time".  This is not a problem on a major mobile app which will have usage all the time.  However, for development and for lower usage or enterprise mobile apps, you won't want to pay for idle time, which can add up.  Take, for example, a typical US-based employee mobile app.  It is likely to be used from 8am on the east coast of the US until 5pm on the west coast - about 11 hours.  If your mobile backend is running on any of these technologies, over 50% of the time will be idle, resulting in a bill that is 100% bigger than it could be.  
+
 ### Azure Functions
+
+There are two problems that have been covered above:
+
+* Paying for idle time
+* Scalability for viral apps
+
+These two competing issues are at the core of what Azure Functions solves.  With Azure Functions, a small piece of code is executed whenever it is triggered by an event.  An event could be a HTTP request (and this is the most common scenario within a mobile backend), but it could just as easily be a completed upload of a photo, or a timer has triggered to initiate a batch job.  Since the Azure Function is not triggered (or paid for) until it is used, you never pay for idle time.  You also have options for scalability.  With a consumption plan, you scale as your app scales, paying for compute resources when your app is running.
+
+There are three down sides to using Azure Functions (two of which you can work around).  The first issue is that you must architect your mobile backend with Azure Functions in mind.  Your mobile backend is no longer an ASP.NET Core application - it's an Azure Functions app, which its own method of doing things. We'll get into what this means more later on.  The second issue is that Azure Functions are limited in the amount of time that they can execute.  This is normally a good thing - a HTTP trigger that executes for more than 10 seconds will cause timeouts to your users.  Sometimes, however, the function will take longer.  In this case, you should use either a [Durable Function][durable-function-pattern] or a Premium Plan (described below).
+
+The third issue is a common serverless issue - cold start.  The Azure Functions runtime does not start up your app until the first request.  It will then keep the app around for a little while before shutting it down again.  Once it is shut down, the start up process needs to be gone through again.  Similarly, when the Azure Functions runtime automatically scales your app to a new instance, the cold start process must be gone through again.  This cold start process might be small (and we try to architect applications so that it is small).  However, it can also be significant.  Imagine an ASP.NET Core application that connects to a SQL database with a persistent connection.  The start-up process is significant.
+
+To get around these latter problems, Azure Functions has a premium plan.  This provides for perpetually warm instances to avoid any cold start along with more predictable pricing, and a function can execute for a potentially unlimited amount of time, making it ideal for batch jobs.  Instead of billing per execution, you are billed for the number of core seconds across all instances.  This also allows you to reserve instances (at a fixed monthly cost).  
+
+Let's take a look at what a typical Azure Functions based application looks like by [transitioning our REST backend from Chapter 1 to Azure Functions](./functions.md).
 
 ## What do I use?
 
-This is the ultimate "it depends" answer.  If I am running a service that requires access to a service that has a long startup cost (like Azure SQL) or I am running a service whose response may take a long time, then I will create an ASP.NET Core based service and deploy it on Azure App Service.  I try and architect my service so that I am not dependent on long-running operations.  I use Azure Functions when possible to minimize costs yet gain the maximum scalability and availability from my service.
+This is a great question.  When I am pressed into building a mobile backend, generally an architecture presents itself.  When I have flexibility, I use the following rules:
 
-Let's take a look at what a typical deployment pipeline looks like by [transitioning our REST backend from Chapter 1 to Azure Functions](./functions.md).
+1.  Use as many services that I can to minimize code I have to write.
+2.  Use Azure Functions for batch jobs or behind the scenes processing jobs.
+3.  Use an Azure App Service for the main interface to the mobile app.
 
+The services that I use directly from the mobile app include Azure Active Directory (and AAD B2C) and Azure Storage, covering identity and file storage respectively.  For most services, I will use Azure Functions that are triggered by an event (for example, upload a file to storage).  I use use an ASP.NET Core application to provide access to structured data (like Cosmos or Azure SQL).
+
+<!-- Links -->
+[docker-intro]: https://docs.docker.com/v17.09/engine/examples/dotnetcore/
+[aks]: https://azure.microsoft.com/en-us/services/kubernetes-service/
+[service-fabric]: https://azure.microsoft.com/en-us/services/service-fabric/
+[azure-devops]: https://visualstudio.microsoft.com/team-services/
+[durable-function-pattern]: https://docs.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-concepts#async-http
