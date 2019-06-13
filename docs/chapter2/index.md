@@ -100,6 +100,11 @@ This is a great question.  When I am pressed into building a mobile backend, gen
 
 The services that I use directly from the mobile app include Azure Active Directory (and AAD B2C) and Azure Storage, covering identity and file storage respectively.  For most services, I will use Azure Functions that are triggered by an event (for example, upload a file to storage).  I use use an ASP.NET Core application to provide access to structured data (like Cosmos or Azure SQL).
 
+## Next steps
+
+* Investigate how to [write a REST backend using Azure Functions](./functions.md)
+* Take a look at the [app we will be writing in the rest of the book](./app.md)
+
 <!-- Links -->
 [docker-intro]: https://docs.docker.com/v17.09/engine/examples/dotnetcore/
 [aks]: https://azure.microsoft.com/en-us/services/kubernetes-service/
