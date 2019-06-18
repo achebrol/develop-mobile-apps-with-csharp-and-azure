@@ -6,7 +6,9 @@ What has happened since then?
 
 Let's first of all talk about the development of the front end.  We can ignore Windows as a platform now.  It is all but gone, leaving just iOS and Android as viable platforms.  The number of languages you can write in has exploded.  On the purely native side, you have a choice of Objective-C and Swift for iOS development and Java or Kotlin for Android development.  On the cross-platform side, you have Xamarin and C++ as before, but also a variety of JavaScript frameworks, including [React Native][1] and [NativeScript][2] that provide a bridge technology to native code, allowing you to leverage web development techniques but still produce a native app.  In addition, Google has released [Flutter][3], coded in [Dart][4].
 
-On the backend side, most of the development is in serverless technologies.  Instead of paying continually for a web service instance, you code your application to use functions that are paid for per invocation.  Mobile developers take advantage of managed services where possible.  Mobile apps cre less about how the data is stored on the backend, prefering to use optimized data graphs provided over [GraphQL][5].
+On the backend side, most of the development is in serverless technologies.  Instead of paying continually for a web service instance, you code your application to use functions that are paid for per invocation.  Mobile developers take advantage of managed services where possible.  Mobile apps cre less about how the data is stored on the backend, preferring to use optimized data graphs provided over [GraphQL][5].
+
+This book is one persons opinion, and it degrades over time.  Do not read this and consider it the last word on cross-platform mobile development with C#.  It can't be.  I hope that it can be a starting point for your own research.
 
 ## What are Cloud Connected Mobile Apps?
 

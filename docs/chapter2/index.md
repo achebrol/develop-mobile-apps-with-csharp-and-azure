@@ -37,25 +37,13 @@ How busy will your service be?  That's an impossible question to answer.  Someti
 
 ### Failure model
 
-What happens when a node in your service goes down?  A few users will get failed requests, which may pop up annoying alerts that the user can't do anything about.  What about if a country connection goes down?  How about if a user moves between wifi and LTE coverage?  What about if they live in Africa and don't even have access to GPRS speeds?  In short, how do you deal with two failure modes: a failure to connect to the cloud and a speed (or latency) issue? 
+What happens when a node in your service goes down?  A few users will get failed requests, which may pop up annoying alerts that the user can't do anything about.  What about if a country connection goes down?  How about if a user moves between WiFi and LTE coverage?  What about if they live in Africa and don't even have access to GPRS speeds?  In short, how do you deal with two failure modes: a failure to connect to the cloud and a speed (or latency) issue? 
 
-The answers to these questions drive the expectations of the service and the expections of the users.  You have to plan for failure.  Quite how you do that will drive how you think about your backend service.
+The answers to these questions drive the expectations of the service and the expectations of the users.  You have to plan for failure.  Quite how you do that will drive how you think about your backend service.
 
 ## Deployment Options
 
-Let's look at the four options you could use:
-
-### Virtual Machines
-
-If you want ultimate control at any cost, you can't get more basic than an architecture based on Virtual Machines.  You get to pick the virtual machine size, how much storage you want to provide, the operating system and environment that your app runs in and how it is exposed to the Internet. 
-
-![](img/index-1.png)
-
-The biggest plus to this environment is the control it gives you.  You can run anything on these virtual machines, and there do exist some libraries that require (for example) the Windows GDI to do rendering, or specific access to Active Directory that is only provided through a low-level interface.  The biggest downside to this architecture is its complexity.  This is a lot of management to do to keep your environment up to date in terms of security patching.  You are responsible for that.  Management of the infrastructure and deployments will take significant time away from your development tasks.
-
-Having a whole architecture as a mobile backend is not advised.  However, you may want to stand up a microservice to handle a specific functionality.  For example, if you need to use the Windows GDI platform to do rendering, you may run a microservice that just does that rendering.  You would then stand up a much smaller set of virtual machines behind a load balancer just for this function. 
-
-We won't be spending any time at all on this type of deployment because it's really not a good fit for mobile backends.
+Let's look at the three options you could use:
 
 ### Containers
 
