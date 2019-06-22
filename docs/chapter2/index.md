@@ -94,8 +94,8 @@ The services that I use directly from the mobile app include Azure Active Direct
 
 ## Next steps
 
-* Investigate how to [write a REST backend using Azure Functions](./functions.md)
-* Take a look at the [app we will be writing in the rest of the book](./app.md)
+* Investigate how to [write a REST backend using Azure Functions](functions.md)
+* Take a look at the [app we will be writing in the rest of the book](app.md)
 
 <!-- Links -->
 [docker-intro]: https://docs.docker.com/v17.09/engine/examples/dotnetcore/

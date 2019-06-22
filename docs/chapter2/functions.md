@@ -271,8 +271,40 @@ You can use the `Site URL` field to connect to this backend.  Just insert this U
 
 ## Cleaning up
 
-You can clean up the Azure Functions app just like any other service - delete the resource group.  This can be done via the portal (my preferred method), via PowerShell, or via the Cloud Explorer within Visual Studio.
+You can clean up the Azure Functions app just like any other service - delete the resource group.  This can be done via the portal, via PowerShell, or via the Cloud Explorer within Visual Studio.  Since you will likely be adding and removing resources frequently, let's learn how to login to Azure on the command line and remove the appropriate resource group.
 
+First, [install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest).  There are options for both Windows and MacOS.
+
+Once you have downloaded and installed the package, open up a command line.  I use PowerShell for my command line, but I use the Azure CLI rather than the PowerShell cmdlets.  This is because I switch between a Mac and PC.  The commands I run are the same on both systems if I use the Azure CLI.  
+
+Let's start by authenticating with the Azure CLI.  All the Azure CLI commands are in the `az` command.  Type:
+
+```bash
+az login
+```
+
+If you are on Windows or Mac, a browser window will pop up and you will log in to the Azure Portal.  Once you have logged in, the `az login` command will return with the details of your subscriptions in JSON format.  You don't need this, but it signifies that your command worked.  
+
+Next, let's list the resource groups that are available:
+
+```bash
+az group list
+```
+
+This will give you something like the following:
+
+![](img/functions-8.png)
+
+Note the name field.  You will need this in the next command:
+
+```bash
+az group delete -n "<name>" -y
+```
+
+This takes some time - as expected.  However, it doesn't take as much time as using the portal.  The portal is lazy about how it kicks off deletes, so they tend to take longer through the portal than through the command line.  The PowerShell cmdlets use the same backend interface, so there is no
+difference between the time PowerShell takes and the time the Azure CLI takes.
+
+Now that we've cleaned up, take a look at the [app we will be writing in the rest of the book](app.md).
 
 <!-- Links -->
 [postman]: https://getpostman.com

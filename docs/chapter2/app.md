@@ -43,6 +43,6 @@ I've deliberately left the details of each sub-system vague.  During the followi
 
 We'll wrap up the book by looking at other considerations in producing production-quality mobile apps.
 
-First, on to [identity](../chapter3/index.md)
+First, on to [analytics](../chapter3/index.md).
 
 
