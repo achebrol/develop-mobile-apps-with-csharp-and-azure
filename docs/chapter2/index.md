@@ -43,7 +43,11 @@ The answers to these questions drive the expectations of the service and the exp
 
 ## Deployment Options
 
-Let's look at the three options you could use:
+There are multiple ways to do everything in the cloud, and how you architect your mobile backend is no different.  However, there are ways you can make your life more difficult.  For example, you could decide to just use the most basic facilities provided by Azure - virtual machines, networking,
+and storage - and do everything yourself.  This gives you maximum control - you get to choose which
+operating system, orchestrator, scale units, network firewalls, and hosting platform you want.  However, you also have to manage all that, so you are also responsible for the security, availability, and scalability of the solution.  You don't get any help from the cloud provider in that respect.  It's definitely not recommended given that Azure has some awesome facilities that ease the management pain.
+
+Let's look at three options you could use:
 
 ### Containers
 
@@ -82,11 +86,11 @@ Let's take a look at what a typical Azure Functions based application looks like
 
 This is a great question.  When I am pressed into building a mobile backend, generally an architecture presents itself.  When I have flexibility, I use the following rules:
 
-1.  Use as many services that I can to minimize code I have to write.
+1.  Use as many managed services that I can to minimize the code I have to write.
 2.  Use Azure Functions for batch jobs or behind the scenes processing jobs.
-3.  Use an Azure App Service for the main interface to the mobile app.
+3.  Deploy a container on Azure App Service for the data interface to the mobile app.
 
-The services that I use directly from the mobile app include Azure Active Directory (and AAD B2C) and Azure Storage, covering identity and file storage respectively.  For most services, I will use Azure Functions that are triggered by an event (for example, upload a file to storage).  I use use an ASP.NET Core application to provide access to structured data (like Cosmos or Azure SQL).
+The services that I use directly from the mobile app include Azure Active Directory (and AAD B2C) and Azure Storage, covering identity and file storage respectively.  I would only use a service directly if I can manage the access to it easily through identity services like Azure Active Directory.  Cosmos and SQL Azure are the basic building blocks for databases (covering both NoSQL and SQL services).  I generally access these services through an intermediate web service that I write and deploy on Azure App Service.
 
 ## Next steps
 
