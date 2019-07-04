@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("MyPhotos.Droid.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("TailwindPhotos_App.Droid.Resource", IsApplication=true)]
 
-namespace MyPhotos.Droid
+namespace TailwindPhotos_App.Droid
 {
 	
 	
@@ -26,7 +26,7 @@ namespace MyPhotos.Droid
 		
 		public static void UpdateIdValues()
 		{
-			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::MyPhotos.Droid.Resource.Attribute.actionBarSize;
+			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::TailwindPhotos_App.Droid.Resource.Attribute.actionBarSize;
 		}
 		
 		public partial class Animation

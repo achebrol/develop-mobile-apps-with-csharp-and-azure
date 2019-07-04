@@ -53,11 +53,11 @@ Telemetry and analytics also has a bad reputation as a privacy problem for your 
 
 ## Options for Analytics on Azure
 
-There are three basic ways you can record telemetry within Azure:
+There are two basic ways you can record telemetry within Azure:
 
 1. Visual Studio App Center
 2. Azure Monitor
-3. Backend-only Telemetry
+3. Azure Monitor with Backend-only telemetry
 
 We'll take a look at each of these, but let's do a basic comparison.
 
@@ -93,5 +93,6 @@ If you want even more data, then you can store data points internally to the mob
 **Cost**: Charged per GB, with a free allotment, since you are still using Azure Monitor for this.
 
 ## Next Steps
+
 
 In our app, let's [integrate Visual Studio App Center](vsac.md) for both telemetry and crash analytics from beginning to end.

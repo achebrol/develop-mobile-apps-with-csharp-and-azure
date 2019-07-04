@@ -2,7 +2,7 @@
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace MyPhotos
+namespace TailwindPhotos_App
 {
     public partial class App : Application
     {

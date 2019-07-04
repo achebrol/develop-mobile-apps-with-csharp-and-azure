@@ -5,13 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B10AAC8F-D6FB-42E7-BCDE-D4F05110FC52}</ProjectGuid>
+    <ProjectGuid>{EB0997A4-A4E2-499E-B4FA-1B711E24021E}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TemplateGuid>{6143fdea-f3c2-4a09-aafa-6e230626515e}</TemplateGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>MyPhotos.iOS</RootNamespace>
+    <RootNamespace>TailwindPhotos_App.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>MyPhotos.iOS</AssemblyName>
+    <AssemblyName>TailwindPhotos-App.iOS</AssemblyName>
     <MtouchEnableSGenConc>true</MtouchEnableSGenConc>
     <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
   </PropertyGroup>
@@ -129,9 +129,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\MyPhotos\MyPhotos.csproj">
-      <Project>{949C3E10-F87D-46FF-8C61-7CB5605EF342}</Project>
-      <Name>MyPhotos</Name>
+    <ProjectReference Include="..\TailwindPhotos_App\TailwindPhotos_App.csproj">
+      <Project>{656AA378-22FF-41BE-A0EA-709A2491B602}</Project>
+      <Name>TailwindPhotos_App</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

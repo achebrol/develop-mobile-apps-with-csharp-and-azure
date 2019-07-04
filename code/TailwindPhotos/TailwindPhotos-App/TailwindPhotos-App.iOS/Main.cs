@@ -5,7 +5,7 @@ using System.Linq;
 using Foundation;
 using UIKit;
 
-namespace MyPhotos.iOS
+namespace TailwindPhotos_App.iOS
 {
     public class Application
     {
