@@ -22,7 +22,7 @@ namespace TailwindPhotos_App.iOS
         {
             global::Xamarin.Forms.Forms.Init();
             CachedImageRenderer.Init();
-            LoadApplication(new App());
+            LoadApplication(new App(null));
 
             return base.FinishedLaunching(app, options);
         }

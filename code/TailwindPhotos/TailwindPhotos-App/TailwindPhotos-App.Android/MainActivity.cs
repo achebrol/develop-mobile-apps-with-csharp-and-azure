@@ -21,7 +21,7 @@ namespace TailwindPhotos_App.Droid
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             CachedImageRenderer.Init(true);
 
-            LoadApplication(new App());
+            LoadApplication(new App(this));
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)

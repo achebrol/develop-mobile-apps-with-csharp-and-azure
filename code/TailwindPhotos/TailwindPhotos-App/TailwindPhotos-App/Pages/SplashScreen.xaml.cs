@@ -2,6 +2,9 @@
 using Microsoft.AppCenter.Crashes;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Timers;
+using Tailwind.Photos.Services;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -38,6 +41,24 @@ namespace Tailwind.Photos.Pages
         void OnCrashMeClicked(object sender, EventArgs args)
         {
             Crashes.GenerateTestCrash();
+        }
+
+        async void OnLoginClicked(object sender, EventArgs args)
+        {
+            Analytics.TrackEvent("Click", new Dictionary<string, string>
+            {
+                { "Event", "Login" },
+                { "Page", this.GetType().Name }
+            });
+            var success = await IdentityManager.Instance.Signin();
+            if (success)
+            {
+                Analytics.TrackEvent("Login", new Dictionary<string, string>
+                {
+                    { "Username", IdentityManager.Instance.Username }
+                });
+                Debug.WriteLine($"Username = {IdentityManager.Instance.Username}");
+            }
         }
     }
 }

@@ -43,6 +43,11 @@
             </StackLayout>
             
             <svg:SvgCachedImage Grid.Row="2" Grid.Column="2" Source="resource://Tailwind.Photos.Resources.Icons.appicon.svg"/>
+            
+            <StackLayout Grid.Row="5" Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center">
+                <Button Text="Sign In" Clicked="OnLoginClicked"/>
+            </StackLayout>
+            
         </Grid>
     </ContentPage.Content>
 </ContentPage>
