@@ -71,6 +71,10 @@ Visual Studio App Center is a build and run mobile tool center, and is definitel
 
 **Cost**: Free, with some caveats about the number of push notifications you can send and the number of endpoints you can send to.
 
+!!! tip "Enable Azure Monitor in Visual Studio App Center"
+    Although we don't cover it in this book, you can configure automatic export to Application Insights, a part of Azure Monitor.  This allows you to have the best of both worlds - rich
+    analytics for marketing use plus diagnostics support and coordination with the backend.
+    
 ### Azure Monitor
 
 Azure Monitor is more attuned to the "break/fix" cycle.  Azure Monitor is not explicitly for monitoring mobile apps, so you have to do all the sending of data by hand.  It will allow you to send whatever events you want, and has in-built alarms, dashboards, and workbooks, with access to powerful analytics tools like PowerBI.
@@ -93,6 +97,5 @@ If you want even more data, then you can store data points internally to the mob
 **Cost**: Charged per GB, with a free allotment, since you are still using Azure Monitor for this.
 
 ## Next Steps
-
 
 In our app, let's [integrate Visual Studio App Center](vsac.md) for both telemetry and crash analytics from beginning to end.

@@ -37,6 +37,11 @@
                     </Label.FontFamily>
                 </Label>
             </StackLayout>
+
+            <StackLayout Grid.Row="0" Grid.Column="4" HorizontalOptions="Center" VerticalOptions="Center">
+                <Button Text="Crash Me" Clicked="OnCrashMeClicked"/>
+            </StackLayout>
+            
             <svg:SvgCachedImage Grid.Row="2" Grid.Column="2" Source="resource://Tailwind.Photos.Resources.Icons.appicon.svg"/>
         </Grid>
     </ContentPage.Content>
