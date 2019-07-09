@@ -11,7 +11,7 @@ namespace Tailwind.Photos.Services
         /// <summary>
         /// The ClientID is the Application ID found in the portal (https://go.microsoft.com/fwlink/?linkid=2083908).
         /// </summary>
-        private readonly string ClientID = "b7761b83-3295-4196-a0ee-ffb70408dd89";
+        private readonly string ClientID = "c135e109-9fb3-4a8f-9991-7896ab018f6e";
 
         /// <summary>
         /// The TenantID is for the directory and found in the portal as well.
@@ -66,7 +66,7 @@ namespace Tailwind.Photos.Services
             private set;
         }
 
-        public async Task<Boolean> Signin()
+        public async Task<Boolean> Signin(object sender = null)
         {
             try
             {
@@ -86,9 +86,10 @@ namespace Tailwind.Photos.Services
             // If we get here, we need to pop up a UI
             try
             {
+                var window = (sender == null) ? IdentityManager.ParentWindow : sender;
                 var uiResult = await idp
                     .AcquireTokenInteractive(Scopes)
-                    .WithParentActivityOrWindow(IdentityManager.ParentWindow)
+                    .WithParentActivityOrWindow(window)
                     .ExecuteAsync();
                 AccessToken = uiResult.AccessToken;
                 Username = uiResult.Account.Username;

@@ -13,7 +13,7 @@ namespace Tailwind.Photos
         private readonly string iosAppId     = "cff85ae5-452c-4e12-a258-1c525c6f0b4f";
         private readonly string androidAppId = "ad7b66de-74ea-4f10-b61f-2d1b2fb31ea4";
 
-        public App(object parent)
+        public App(object parent = null)
         {
             IdentityManager.ParentWindow = parent;
             MainPage = new NavigationPage(new SplashScreen());

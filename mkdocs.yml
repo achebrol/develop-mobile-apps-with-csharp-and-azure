@@ -9,6 +9,7 @@ nav:
     - Introduction: chapter1/index.md
     - Deployment: chapter2/index.md
     - Analytics: chapter3/index.md
+    - Authentication: chapter4/index.md
 
 theme: 
   name: material
