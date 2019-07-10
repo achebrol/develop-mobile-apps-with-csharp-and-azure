@@ -50,6 +50,7 @@ At this point, you need to make a record of three things:
 
 These are all available in the application registration overview.  
 
+<a name="ch4-aad-mobile"></a>
 ## Integrate into the mobile app
 
 Integration can be a little tricky because iOS and Android treat web views differently.  The UI for authentication is presented in a web view.  We need to ensure that the platform (Android or iOS) transfers control to the MSAL code once authentication is complete.  This happens when Azure Active Directory redirects back to the redirect URI.

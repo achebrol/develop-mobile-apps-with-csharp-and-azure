@@ -23,5 +23,7 @@ Authentication is one of those areas with a lot of terminology and concepts that
 In this chapter, we are going to look at various authentication methods and see how we can integrate them in such a way that any service that you write that is hosted within Azure can use the authentication.  However, it is likely that your mobile app will fall into one of three buckets:
 
 1. [Enterprise credentials via Azure Active Directory](aad.md).
-2. [Social media authentication via Facebook, Twitter, Google, or LinkedIn](b2c.md).
-3. [Username and password authentication via a non-Azure library](upn.md).
+2. [Username and password authentication via Azure Active Directory B2C](b2c.md).
+3. [Social media authentication via Facebook, Twitter, Google, or LinkedIn](social.md).
+
+Once you've got the basic authentication done, we'll move on to some other techniques, such as SMS authentication and Face ID.
