@@ -57,7 +57,6 @@ namespace Tailwind.Photos.Pages
                 {
                     { "Username", IdentityManager.Instance.Username }
                 });
-                Debug.WriteLine($"Username = {IdentityManager.Instance.Username}");
             }
         }
     }

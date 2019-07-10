@@ -13,8 +13,8 @@ namespace Tailwind.Photos.Services
         private readonly string UserFlow = "B2C_1_Signin";
         private readonly string RedirectUri = "msal-tailwinds-photos://auth";
 
-        private readonly string Authority = $"https://login.onmicrosoft.com/tfp/{Tenant}/{UserFlow}";
-        private readonly string[] Scopes = { "openid" };
+        private string Authority;
+        private readonly string[] Scopes = { "" };
 
         /// <summary>
         /// Lazy initializer for the identity manager (do not touch)
@@ -35,6 +35,7 @@ namespace Tailwind.Photos.Services
 
         private IdentityManager()
         {
+            Authority = $"https://login.microsoftonline.com/tfp/{Tenant}/{UserFlow}";
             idp = PublicClientApplicationBuilder
                 .Create(ApplicationId)
                 .WithB2CAuthority(Authority)

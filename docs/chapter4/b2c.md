@@ -73,15 +73,21 @@ private readonly string ApplicationId = "cbd3e5fb-b1c2-496e-b276-08b58de76c2a";
 private readonly string UserFlow = "B2C_1_Signin";
 private readonly string RedirectUri = "msal-tailwinds-photos://auth";
 
-private readonly string Authority = $"https://login.onmicrosoft.com/tfp/{Tenant}/{UserFlow}";
-private readonly string[] Scopes = { "openid" };
+private string Authority; 
+private readonly string[] Scopes = { "" };
 ```
 
-We calculate the authority field, which is used extensively in the sign-in process, based on the tenant and user flow.  For the majority of accounts, the Authority is based on `login.onmicrosoft.com`.  However, this may not be correct for you, especially if you intend to alter the branding away from Microsoft branding or are using a previously created B2C tenant.  Take a look at [the documentation](https://docs.microsoft.com/en-us/azure/active-directory-b2c/b2clogin) for more information on this topic.  Let's continue with adjusting the `IdentityManager.cs` class to use Azure AD B2C:
+We calculate the authority field within the constructor, which is used extensively in the sign-in process, based on the tenant and user flow.  For the majority of accounts, the Authority is based on `login.onmicrosoft.com`.  However, this may not be correct for you, especially if you intend to alter the branding away from Microsoft branding or are using a previously created B2C tenant.  Take a look at [the documentation](https://docs.microsoft.com/en-us/azure/active-directory-b2c/b2clogin) for more information on this topic.  
+
+!!! tip "B2C standard scopes"
+    The MSAL (Microsoft.Identity.Client) library always sends three scopes to B2C - `openid`,  `profile`, and `offline_access`.  They are always included so you should not include them in the `Scopes` variable.  If you only want these, add a blank string (as I have here) to the Scopes.
+
+Let's continue with adjusting the `IdentityManager.cs` class to use Azure AD B2C:
 
 ```csharp
 private IdentityManager()
 {
+    Authority = $"https://login.onmicrosoft.com/tfp/{Tenant}/{UserFlow}";
     idp = PublicClientApplicationBuilder
         .Create(ApplicationId)
         .WithB2CAuthority(Authority)
@@ -147,3 +153,20 @@ public async Task<Boolean> Signin(object sender = null)
 
 As with the Azure AD version of this method, we try to get the token silently.  If that works, the user won't even be prompted for credentials.  If, however, we need to prompt the user, we will.  This brings up the same views and will prompt the user to sign up or sign in.
 
+## Run the app
+
+When you run the app and click on the sign-in button, you will get the following:
+
+![](img/b2c-6.png)
+
+Click the "Sign up now" link to get to the sign-up form.  It's a little wierd in that you have to click "Send Verification Code", then wait around for the code via email and enter it into the form before clicking on Create.  Once complete, you will have created an account but not be signed in.
+
+Set a breakpoint in the `IdentityManager` on the two lines where we set the `AccessToken`.   Run the app again and sign in (if necessary - it's likely you won't need to).  You will note that there is no username or access token.  We haven't asked for an access token within the scopes, which is why one is not there.  As for `Username`; well - you didn't create one when the user was being created.  This is a common mistake.  You only get the information you ask for.  
+
+TODO: Explain how to get the User Id and Email Address!
+
+## Next Steps
+
+My general advice is to use social media logins where possible.  It cuts down on the number of accounts that your users have to remember, which improves their security posture.  This does, of course, assume that the social media website is taking care of security as well.
+
+In the [next section](social.md), we'll take a look at integrating [social accounts](social.md) such as Facebook and Google.
