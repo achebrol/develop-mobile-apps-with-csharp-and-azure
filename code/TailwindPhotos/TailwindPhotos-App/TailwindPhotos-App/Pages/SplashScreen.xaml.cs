@@ -2,8 +2,6 @@
 using Microsoft.AppCenter.Crashes;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Timers;
 using Tailwind.Photos.Services;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -24,7 +22,7 @@ namespace Tailwind.Photos.Pages
             Analytics.TrackEvent("PAGE", new Dictionary<string, string>
             {
                 { "Event", "Appear" },
-                { "Page", this.GetType().Name }
+                { "Page", GetType().Name }
             });
         }
 
@@ -34,7 +32,7 @@ namespace Tailwind.Photos.Pages
             Analytics.TrackEvent("PAGE", new Dictionary<string, string>
             {
                 { "Event", "Disappear" },
-                { "Page", this.GetType().Name }
+                { "Page", GetType().Name }
             });
         }
 
@@ -48,16 +46,9 @@ namespace Tailwind.Photos.Pages
             Analytics.TrackEvent("Click", new Dictionary<string, string>
             {
                 { "Event", "Login" },
-                { "Page", this.GetType().Name }
+                { "Page", GetType().Name }
             });
-            var success = await IdentityManager.Instance.Signin();
-            if (success)
-            {
-                Analytics.TrackEvent("Login", new Dictionary<string, string>
-                {
-                    { "Username", IdentityManager.Instance.Username }
-                });
-            }
+            await IdentityManager.Instance.Signin();
         }
     }
 }
