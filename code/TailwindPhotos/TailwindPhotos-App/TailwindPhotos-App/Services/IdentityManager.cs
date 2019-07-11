@@ -44,13 +44,13 @@ namespace Tailwind.Photos.Services
                 .Build();
         }
 
-        public string AccessToken
+        public AuthenticationResult LastAuthenticationResult
         {
             get;
             private set;
         }
 
-        public string Username
+        public bool IsAuthenticated
         {
             get;
             private set;
@@ -75,8 +75,8 @@ namespace Tailwind.Photos.Services
                 var result = await idp.AcquireTokenSilent(Scopes, account)
                     .WithB2CAuthority(Authority)
                     .ExecuteAsync();
-                AccessToken = result.AccessToken;
-                Username = result.Account.Username;
+                LastAuthenticationResult = result;
+                IsAuthenticated = true;
                 return true;
             }
             catch (MsalUiRequiredException)
@@ -95,8 +95,8 @@ namespace Tailwind.Photos.Services
                     .WithAccount(account)
                     .WithParentActivityOrWindow(window)
                     .ExecuteAsync();
-                AccessToken = uiResult.AccessToken;
-                Username = uiResult.Account.Username;
+                LastAuthenticationResult = uiResult;
+                IsAuthenticated = true;
                 return true;
             }
             catch (Exception ex)
@@ -116,8 +116,8 @@ namespace Tailwind.Photos.Services
                     await idp.RemoveAsync(accounts.FirstOrDefault());
                     accounts = await idp.GetAccountsAsync();
                 }
-                AccessToken = null;
-                Username = null;
+                LastAuthenticationResult = null;
+                IsAuthenticated = false;
             }
             catch (Exception ex)
             {
