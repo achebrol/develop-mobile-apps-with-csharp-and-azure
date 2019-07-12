@@ -38,16 +38,18 @@
                 </Label>
             </StackLayout>
 
-            <StackLayout Grid.Row="0" Grid.Column="4" HorizontalOptions="Center" VerticalOptions="Center">
-                <Button Text="Crash Me" Clicked="OnCrashMeClicked"/>
-            </StackLayout>
-            
             <svg:SvgCachedImage Grid.Row="2" Grid.Column="2" Source="resource://Tailwind.Photos.Resources.Icons.appicon.svg"/>
-            
-            <StackLayout Grid.Row="5" Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center">
-                <Button Text="Sign In" Clicked="OnLoginClicked"/>
+
+            <StackLayout Grid.Row="4" Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center">
+                <ActivityIndicator x:Name="InitializerIndicator" 
+                                   IsRunning="True"/>
+                <Button x:Name="LoginButton" 
+                        IsEnabled="False" 
+                        IsVisible="False" 
+                        Text="Sign In" 
+                        CornerRadius="5"
+                        Clicked="OnLoginClicked"/>
             </StackLayout>
-            
         </Grid>
     </ContentPage.Content>
 </ContentPage>

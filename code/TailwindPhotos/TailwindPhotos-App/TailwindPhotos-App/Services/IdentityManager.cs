@@ -67,7 +67,7 @@ namespace Tailwind.Photos.Services
             return null;
         }
 
-        public async Task<Boolean> Signin(object sender = null)
+        public async Task SilentlySignIn()
         {
             try
             {
@@ -77,11 +77,18 @@ namespace Tailwind.Photos.Services
                     .ExecuteAsync();
                 LastAuthenticationResult = result;
                 IsAuthenticated = true;
-                return true;
             }
             catch (MsalUiRequiredException)
             {
                 // Ignore this error - it's used to fall-through
+            }
+        }
+        public async Task InteractivelySignin(object sender = null)
+        {
+            await SilentlySignIn();
+            if (IsAuthenticated)
+            {
+                return;
             }
 
             // If we can silently acquire the token, then this is never reached.
@@ -97,12 +104,10 @@ namespace Tailwind.Photos.Services
                     .ExecuteAsync();
                 LastAuthenticationResult = uiResult;
                 IsAuthenticated = true;
-                return true;
             }
             catch (Exception ex)
             {
                 Crashes.TrackError(ex);
-                return false;
             }
         }
 
