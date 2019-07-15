@@ -1,19 +1,17 @@
-﻿using Xamarin.Forms;
-using Microsoft.AppCenter;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
-using Tailwind.Photos.Pages;
-using System.Collections.Generic;
+﻿using Tailwind.Photos.Pages;
 using Tailwind.Photos.Services;
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
 namespace Tailwind.Photos
 {
-    public class App : Application
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class App : Application
     {
-
         public App(object parent = null)
         {
             IdentityManager.ParentWindow = parent;
+
             MainPage = new NavigationPage(new SplashScreen());
         }
 
@@ -32,7 +30,7 @@ namespace Tailwind.Photos
         {
             base.OnResume();
             AnalyticsService.TrackLifecycleEvent("Resume");
-            
+
         }
     }
 }
