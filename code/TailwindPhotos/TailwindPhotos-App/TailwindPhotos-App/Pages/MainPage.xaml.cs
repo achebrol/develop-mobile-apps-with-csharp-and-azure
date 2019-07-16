@@ -19,7 +19,7 @@ namespace Tailwind.Photos.Pages
             }
         }
 
-        async void onProfileClicked(object sender, EventArgs args)
+        async void OnProfileClicked(object sender, EventArgs args)
         {
             await Navigation.PushAsync(new ProfilePage());
         }

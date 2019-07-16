@@ -1,45 +1,65 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:svg="clr-namespace:FFImageLoading.Svg.Forms;assembly=FFImageLoading.Svg.Forms"
-             mc:Ignorable="d"
-             x:Class="Tailwind.Photos.Pages.SplashScreen"
-             NavigationPage.HasNavigationBar="False"
-             BackgroundColor="{StaticResource SplashBackground}">
+<ContentPage
+    x:Class="Tailwind.Photos.Pages.SplashScreen"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:svg="clr-namespace:FFImageLoading.Svg.Forms;assembly=FFImageLoading.Svg.Forms"
+    BackgroundColor="{StaticResource SplashBackground}"
+    NavigationPage.HasNavigationBar="False"
+    mc:Ignorable="d">
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="2*"/>
-                <RowDefinition Height="2*"/>
-                <RowDefinition Height="2*"/>
-                <RowDefinition Height="2*"/>
-                <RowDefinition Height="2*"/>
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="2*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
 
-            <StackLayout Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HorizontalOptions="Center" VerticalOptions="Center">
-                <Label FontSize="Title" Text="Tailwind Photos" FontFamily="{StaticResource Pacifico}"/>
+            <StackLayout
+                Grid.Row="1"
+                Grid.Column="1"
+                Grid.ColumnSpan="3"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+                <Label FontSize="Title" Text="Tailwind Photos">
+                    <Label.FontFamily>
+                        <OnPlatform x:TypeArguments="x:String">
+                            <On Platform="iOS" Value="Pacifico" />
+                            <On Platform="Android" Value="Pacifico.ttf#Pacifico" />
+                        </OnPlatform>
+                    </Label.FontFamily>
+                </Label>
             </StackLayout>
 
-            <svg:SvgCachedImage Grid.Row="2" Grid.Column="2" Source="resource://Tailwind.Photos.Resources.Icons.appicon.svg"/>
+            <svg:SvgCachedImage
+                Grid.Row="2"
+                Grid.Column="2"
+                Source="resource://Tailwind.Photos.Resources.Icons.appicon.svg" />
 
-            <StackLayout Grid.Row="4" Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center">
-                <ActivityIndicator x:Name="InitializerIndicator" 
-                                   IsRunning="True"/>
-                <Button x:Name="LoginButton" 
-                        IsEnabled="False" 
-                        IsVisible="False" 
-                        Text="Sign In" 
-                        CornerRadius="5"
-                        Clicked="OnLoginClicked"/>
+            <StackLayout
+                Grid.Row="4"
+                Grid.Column="2"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+                <ActivityIndicator x:Name="InitializerIndicator" IsRunning="True" />
+                <Button
+                    x:Name="LoginButton"
+                    Clicked="OnLoginClicked"
+                    CornerRadius="5"
+                    IsEnabled="False"
+                    IsVisible="False"
+                    Text="Sign In" />
             </StackLayout>
         </Grid>
     </ContentPage.Content>
