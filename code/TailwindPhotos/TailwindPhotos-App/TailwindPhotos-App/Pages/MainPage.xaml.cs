@@ -1,5 +1,5 @@
 ﻿using System;
-using Tailwind.Photos.Services;
+using System.Diagnostics;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -10,7 +10,13 @@ namespace Tailwind.Photos.Pages
     {
         public MainPage()
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
+            }
+            catch (Exception ex) {
+                Debug.WriteLine("Error in XamlParseException");
+            }
         }
 
         async void onProfileClicked(object sender, EventArgs args)

@@ -5,11 +5,21 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
     <Application.Resources>
-        <OnPlatform x:Key="FontAwesome" x:TypeArguments="x:String">
-            <On Platform="iOS" Value="Font Awesome 5 Free" />
-            <On Platform="Android" Value="fa-solid-900.ttf#fa-solid" />
-        </OnPlatform>
+        <ResourceDictionary>
+            <OnPlatform x:Key="FontAwesome" x:TypeArguments="x:String">
+                <On Platform="iOS" Value="Font Awesome 5 Free"/>
+                <On Platform="Android" Value="fa-solid-900.ttf#Font Awesome 5 Free Solid"/>
+            </OnPlatform>
 
-        <x:String x:Key="IconUserCircle">&#xf2bd;</x:String>
+            <OnPlatform x:Key="Pacifico" x:TypeArguments="x:String">
+                <On Platform="iOS" Value="Pacifico"/>
+                <On Platform="Android" Value="Pacifico.ttf#Pacifico"/>
+            </OnPlatform>
+
+            <x:String x:Key="FA_UserCircle">&#xf2bd;</x:String>
+
+            <Color x:Key="SplashBackground">#9DD3AF</Color>
+
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -6,10 +6,8 @@
              xmlns:svg="clr-namespace:FFImageLoading.Svg.Forms;assembly=FFImageLoading.Svg.Forms"
              mc:Ignorable="d"
              x:Class="Tailwind.Photos.Pages.SplashScreen"
-             NavigationPage.HasNavigationBar="False">
-    <ContentPage.Resources>
-        <StyleSheet Source="/Resources/Styles/Splash.css"/>
-    </ContentPage.Resources>
+             NavigationPage.HasNavigationBar="False"
+             BackgroundColor="{StaticResource SplashBackground}">
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -28,14 +26,7 @@
             </Grid.ColumnDefinitions>
 
             <StackLayout Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HorizontalOptions="Center" VerticalOptions="Center">
-                <Label FontSize="Large" Text="Tailwind Photos">
-                    <Label.FontFamily>
-                        <OnPlatform x:TypeArguments="x:String">
-                            <On Platform="iOS" Value="Pacifico"/>
-                            <On Platform="Android" Value="Pacifico.ttf#Pacifico"/>
-                        </OnPlatform>
-                    </Label.FontFamily>
-                </Label>
+                <Label FontSize="Title" Text="Tailwind Photos" FontFamily="{StaticResource Pacifico}"/>
             </StackLayout>
 
             <svg:SvgCachedImage Grid.Row="2" Grid.Column="2" Source="resource://Tailwind.Photos.Resources.Icons.appicon.svg"/>

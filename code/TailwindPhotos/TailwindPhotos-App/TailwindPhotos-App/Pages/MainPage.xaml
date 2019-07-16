@@ -9,9 +9,11 @@
     mc:Ignorable="d">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Name="toolbarProfileItem" Clicked="onProfileClicked">
+        <ToolbarItem Name="toolbarProfileItem" Clicked="onProfileClicked" Text="Profile">
             <ToolbarItem.IconImageSource>
-                <FontImageSource FontFamily="{StaticResource FontAwesome}" Glyph="\uf2bd" />
+                <FontImageSource 
+                    FontFamily="{StaticResource FontAwesome}"
+                    Glyph="{StaticResource FA_UserCircle}"/>
             </ToolbarItem.IconImageSource>
         </ToolbarItem>
     </ContentPage.ToolbarItems>
