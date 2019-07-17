@@ -6,6 +6,7 @@
 
     <Application.Resources>
         <ResourceDictionary>
+            <!-- Font Family Definitions -->
             <OnPlatform x:Key="FontAwesome" x:TypeArguments="x:String">
                 <On Platform="iOS" Value="Font Awesome 5 Free"/>
                 <On Platform="Android" Value="fa-solid-900.ttf#Font Awesome 5 Free Solid"/>
@@ -16,10 +17,11 @@
                 <On Platform="Android" Value="Pacifico.ttf#Pacifico"/>
             </OnPlatform>
 
+            <!-- Icon Families -->
             <x:String x:Key="FA_UserCircle">&#xf2bd;</x:String>
-
+            
+            <!-- Style Definitions -->
             <Color x:Key="SplashBackground">#9DD3AF</Color>
-
         </ResourceDictionary>
     </Application.Resources>
 </Application>

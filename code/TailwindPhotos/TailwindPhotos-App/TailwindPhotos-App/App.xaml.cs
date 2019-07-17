@@ -10,6 +10,8 @@ namespace Tailwind.Photos
     {
         public App(object parent = null)
         {
+            InitializeComponent();
+
             IdentityManager.ParentWindow = parent;
 
             MainPage = new NavigationPage(new SplashScreen());
