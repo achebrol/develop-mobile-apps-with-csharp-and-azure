@@ -47,7 +47,7 @@ namespace Tailwind.Photos.Pages
             AnalyticsService.TrackPageDisappearing(GetType().Name);
         }
 
-        async void OnLoginClicked(object sender, EventArgs args)
+        async void OnSigninClicked(object sender, EventArgs args)
         {
             await IdentityManager.Instance.InteractivelySignin();
             if (IdentityManager.Instance.IsAuthenticated)

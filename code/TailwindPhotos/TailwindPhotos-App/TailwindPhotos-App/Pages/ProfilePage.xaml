@@ -8,11 +8,28 @@
     Title="Profile"
     mc:Ignorable="d">
     <ContentPage.Content>
-        <StackLayout>
-            <Label
-                HorizontalOptions="CenterAndExpand"
-                Text="ProfilePage"
-                VerticalOptions="CenterAndExpand" />
-        </StackLayout>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="4*"/>
+                <RowDefinition Height="4*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Frame Grid.Row="0" Grid.Column="0" Style="{StaticResource profileTopSectionStyle}">
+            </Frame>
+
+            <Frame Grid.Row="1" Grid.Column="0" Style="{StaticResource profileBottomSectionStyle}">
+            </Frame>
+
+            <Frame Grid.Row="2" Grid.Column="0" Style="{StaticResource profileActionsSectionStyle}">
+                <StackLayout Style="{StaticResource Centered}">
+                    <Button x:Name="LoginButton" Clicked="OnSignoutClicked" Text="Sign Out"/>
+                </StackLayout>
+            </Frame>
+
+        </Grid>
     </ContentPage.Content>
 </ContentPage>

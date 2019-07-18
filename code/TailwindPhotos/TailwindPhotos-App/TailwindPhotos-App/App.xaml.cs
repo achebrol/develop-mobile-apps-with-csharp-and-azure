@@ -14,7 +14,11 @@ namespace Tailwind.Photos
 
             IdentityManager.ParentWindow = parent;
 
-            MainPage = new NavigationPage(new SplashScreen());
+            MainPage = new NavigationPage(new SplashScreen())
+            {
+                BarBackgroundColor = (Color) App.Current.Resources["PrimaryColor"],
+                BarTextColor = (Color) App.Current.Resources["PrimaryTextColor"]
+            };
         }
 
         protected override void OnStart()

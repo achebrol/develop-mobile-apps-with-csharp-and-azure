@@ -20,8 +20,66 @@
             <!-- Icon Families -->
             <x:String x:Key="FA_UserCircle">&#xf2bd;</x:String>
             
-            <!-- Style Definitions -->
-            <Color x:Key="SplashBackground">#9DD3AF</Color>
+            <!-- Color Definitions -->
+            <Color x:Key="PrimaryColor">#01579B</Color>
+            <Color x:Key="PrimaryLightColor">#4F83CC</Color>
+            <Color x:Key="PrimaryDarkColor">#002F6C</Color>
+            <Color x:Key="PrimaryTextColor">#FFFFFF</Color>
+            <Color x:Key="SecondaryColor">#B71C1C</Color>
+            <Color x:Key="SecondaryLightColor">#F05545</Color>
+            <Color x:Key="SecondaryDarkColor">#7F0000</Color>
+            <Color x:Key="SecondaryTextColor">#FFFFFF</Color>
+            <Color x:Key="TextPanelBackground">#FAFAFA</Color>
+            <Color x:Key="TextPanelForeground">#000000</Color>
+            <Color x:Key="SecondaryPanelBackground">#E0E0E0</Color>
+            <Color x:Key="SecondaryPanelForeground">#000000</Color>
+            
+            <!-- Style Definitions-->
+            <Style TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource SecondaryColor}"/>
+                <Setter Property="TextColor" Value="{StaticResource SecondaryTextColor}"/>
+                <Setter Property="HeightRequest" Value="30"/>
+                <Setter Property="CornerRadius" Value="14"/>
+                <Setter Property="Padding" Value="0"/>
+            </Style>
+
+            <Style TargetType="Grid">
+                <Setter Property="ColumnSpacing" Value="0"/>
+                <Setter Property="RowSpacing" Value="0"/>
+            </Style>
+
+            <Style x:Key="splashPageStyle" TargetType="ContentPage">
+                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryLightColor}"/>
+            </Style>
+
+            <Style x:Key="FullFrame" TargetType="Frame">
+                <Setter Property="BackgroundColor" Value="Transparent"/>
+                <Setter Property="HorizontalOptions" Value="FillAndExpand"/>
+                <Setter Property="VerticalOptions" Value="FillAndExpand"/>
+                <Setter Property="Margin" Value="0"/>
+                <Setter Property="Padding" Value="0"/>
+            </Style>
+
+            <Style x:Key="Centered" TargetType="StackLayout">
+                <Setter Property="BackgroundColor" Value="Transparent"/>
+                <Setter Property="HorizontalOptions" Value="Center"/>
+                <Setter Property="VerticalOptions" Value="Center"/>
+                <Setter Property="Margin" Value="0"/>
+                <Setter Property="Padding" Value="0"/>
+            </Style>
+
+            <Style x:Key="profileTopSectionStyle" TargetType="Frame" BasedOn="{StaticResource FullFrame}">
+                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
+            </Style>
+
+            <Style x:Key="profileBottomSectionStyle" TargetType="Frame" BasedOn="{StaticResource FullFrame}">
+                <Setter Property="BackgroundColor" Value="{StaticResource TextPanelBackground}"/>
+            </Style>
+
+            <Style x:Key="profileActionsSectionStyle" TargetType="Frame" BasedOn="{StaticResource FullFrame}">
+                <Setter Property="BackgroundColor" Value="{StaticResource TextPanelBackground}"/>
+            </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>
