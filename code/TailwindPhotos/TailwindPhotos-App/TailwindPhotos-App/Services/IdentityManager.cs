@@ -9,10 +9,13 @@ namespace Tailwind.Photos.Services
     public class IdentityManager
     {
         private readonly string Tenant = "tailwinds.onmicrosoft.com";
+        private readonly string Hostname = "tailwinds.b2clogin.com";
         private readonly string ApplicationId = "cbd3e5fb-b1c2-496e-b276-08b58de76c2a";
         private readonly string UserFlow = "B2C_1_Signin";
         private readonly string RedirectUri = "msal-tailwinds-photos://auth";
+        private readonly string IOSKeyChainGroup = "com.microsoft.adalcache";
 
+        private string AuthorityBase;
         private string Authority;
         private readonly string[] Scopes = { "" };
 
@@ -35,11 +38,13 @@ namespace Tailwind.Photos.Services
 
         private IdentityManager()
         {
-            Authority = $"https://login.microsoftonline.com/tfp/{Tenant}/{UserFlow}";
+            AuthorityBase = $"https://{Hostname}/tdp/{Tenant}/";
+            Authority = $"{AuthorityBase}{UserFlow}";
+
             idp = PublicClientApplicationBuilder
                 .Create(ApplicationId)
                 .WithB2CAuthority(Authority)
-                .WithIosKeychainSecurityGroup("com.microsoft.adalcache")
+                .WithIosKeychainSecurityGroup(IOSKeyChainGroup)
                 .WithRedirectUri(RedirectUri)
                 .Build();
         }
@@ -83,6 +88,7 @@ namespace Tailwind.Photos.Services
                 // Ignore this error - it's used to fall-through
             }
         }
+
         public async Task InteractivelySignin(object sender = null)
         {
             await SilentlySignIn();
