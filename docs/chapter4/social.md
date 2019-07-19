@@ -4,6 +4,9 @@ One of the major security improvements you can make to your app is to delegate a
 
 Ultimately, the social provider is using [OpenID Connect](https://openid.net/connect/) to do the authentication and obtain an ID token for the social provider.  This ID token is an assertion of who you are.  You can then pass that token to your service to get an access token for your resources.  In this section, we will look at the process of integrating two distinct social providers - Facebook and LinkedIn.  Facebook is perhaps the most widely used authentication mechanism on the planet, so it is a natural fit for most social apps.  LinkedIn is another widely used platform for professional connections, so it would be more appropriate for work experience-based apps.
 
+!!! info "Websites change"
+    The instructions provided here were correct at the time of writing.  However, websites can and do change - frequently.  I've given the basic outline of what needs to happen.  If the actual instructions or screen shots are different, drop me a note.
+
 ## Integrating Facebook authentication
 
 The process of integrating with a social provider is a three-step process:
@@ -107,7 +110,77 @@ We'll use this later on to access the name and email address of the user.
 
 You can now run your mobile app and sign in.  This time through, you will see a Facebook login button in addition to the username and password login.
 
+![](img/social-7.png)
 
+## Integrating LinkedIn authentication
 
+As with Facebook integration, the process of integrating with LinkedIn is a three-step process:
 
+1. Sign up and configure a new app on the social provider.
+2. Register the social provider in Azure AD B2C as an identity provider.
+3. Update the sign-in/sign-up flow to use the new identity provider.
+
+Start by logging in to your [LinkedIn account](https://www.linkedin.com).  If you don't have a LinkedIn account, create one.
+
+### Create a LinkedIn application
+
+Now that you are signed in:
+
+1. Open the [LinkedIn Developers](https://www.developer.linkedin.com/) website.
+2. Click **My Apps** (in the top bar) > **Create app**.
+3. Enter the following information:
+    * App Name
+    * Company Name (you may need to create a new company page)
+    * Privacy policy URL
+    * Business email
+    * Application Logo (it must be square, 100x100 pixels, and a PNG format)
+4. Agree to the LinkedIn API Terms of Use, then click **Create app**.
+5. Click on the **Auth** tab.  
+6. Make a note of the **Client ID** and **Client Secret** values.  Click on the eyeball icon to see the client secret.
+
+    ![](img/social-8.png)
+
+7. Click the edit icon next to **OAuth 2.0 settings** > **Redirect URLs**.
+8. Click **Add redirect URL**.
+9. Enter `https://tenant-name.b2clogin/tenant-name.onmicrosoft.com/oauth2/authresp`.  Replace `tenant-name` with the name of your Azure AD B2C tenant.
+10. Click **Update**.
+
+### Register Facebook with Azure AD B2C
+
+The next step is to tell Azure AD B2C about the app you have just created on the LinkedIn side.  Sign in to the [Azure portal](https://portal.azure.com) and select the Azure AD B2C tenant if required.  You can do this by clicking on your account in the top-right corner, then selecting **Switch directory** if needed.
+
+Now, let's configure Azure AD B2C:
+
+* Select **All services** > **Azure AD B2C**.  (Use search for this!)
+* Select **Identity providers**.
+* Click **Add**.
+* Enter `LinkedIn` as the name.
+* Click **Identity provider type** > **LinkedIn**, then **OK**.
+* Click **Set up this identity provider**.
+* Fill in the form from the values you noted on the LinkedIn site.
+* Click **OK**.
+* Click **Create**.
+
+### Update the sign-in flow
+
+Now that Azure AD B2C knows about your LinkedIn app, you can configure your user flow to use the identity provider:
+
+* Select **User flows (policies)**.
+* Select the `B2C_1_Signin` user flow.
+* Click **Identity providers**.  There are two links with this name, but they both go to the same place.
+* Ensure the check-box next to **LinkedIn** is checked, then click **Save**.
+
+![](img/social-9.png)
+
+If you didn't do it during the Facebook configuration, you should also configure the sign-in flow to return the identity provider access token. To do this:
+
+* Select **User flows (policies)**.
+* Select th `B2C_1_Signin` user flow.
+* Select **Application claims**.
+* Check the **Identity Provider Access Token** box.
+* Click **Save**.
+
+We'll use this later on to access the name and email address of the user.
+
+You can now run your mobile app and sign in.  This time through, you will see a LinkedIn login button in addition to the username and password login.
 
