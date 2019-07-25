@@ -18,6 +18,8 @@
             </OnPlatform>
 
             <!-- Icon Families -->
+            <x:String x:Key="FA_Envelope">&#xf0e0;</x:String>
+            <x:String x:Key="FA_User">&#xf007;</x:String>
             <x:String x:Key="FA_UserCircle">&#xf2bd;</x:String>
             
             <!-- Color Definitions -->

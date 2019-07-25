@@ -19,24 +19,22 @@
             </Grid.ColumnDefinitions>
 
             <Frame Grid.Row="0" Grid.Column="0" Style="{StaticResource profileTopSectionStyle}">
+                <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="EndAndExpand" Margin="10,20">
+                    <Label x:Name="nameField" TextColor="{StaticResource PrimaryTextColor}" FontSize="Large"/>
+                </StackLayout>
             </Frame>
 
             <Frame Grid.Row="1" Grid.Column="0" Style="{StaticResource profileBottomSectionStyle}">
-                <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="Start" Margin="50">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="50"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="50"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Label x:Name="nameField" Grid.Row="0" Grid.Column="2"/>
-                        <Label x:Name="emailField" Grid.Row="2" Grid.Column="2"/>
-                    </Grid>
+                <StackLayout HorizontalOptions="Start" Orientation="Horizontal">
+                    <Label x:Name="emailIcon" Text="{StaticResource FA_Envelope}">
+                        <Label.FontFamily>
+                            <OnPlatform x:TypeArguments="x:String">
+                                <On Platform="iOS" Value="Font Awesome 5 Free" />
+                                <On Platform="Android" Value="fa-solid-900.ttf#Font Awesome 5 Free Solid" />
+                            </OnPlatform>
+                        </Label.FontFamily>
+                    </Label>
+                    <Label x:Name="emailField"/>
                 </StackLayout>
             </Frame>
 
