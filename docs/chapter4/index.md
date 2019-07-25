@@ -20,10 +20,10 @@ To authenticate with the IdP, a client app (like your mobile app) will use a nat
 
 Authentication is one of those areas with a lot of terminology and concepts that you need to understand in order to diagnose what is happening and why it is happening when things go wrong.  There are [some great articles](https://oauth.net/2/native-apps/) on the internet along with [all the specifications](https://oauth.net/2/).  Because you are dealing with user secrets, you want to be especially careful so you don't inadvertently create an insecure environment.
 
-In this chapter, we are going to look at various authentication methods and see how we can integrate them in such a way that any service that you write that is hosted within Azure can use the authentication.  However, it is likely that your mobile app will fall into one of three buckets:
+In this chapter, we are going to look at various authentication methods and see how we can integrate them in such a way that any service that you write that is hosted within Azure can use the authentication.  However, it is likely that your mobile app will fall into one of four buckets:
 
 1. [Enterprise credentials via Azure Active Directory](aad.md).
 2. [Username and password authentication via Azure Active Directory B2C](b2c.md).
 3. [Social media authentication via Facebook, Twitter, Google, or LinkedIn](social.md).
+4. [Custom authentication scenarios](custom.md).
 
-Once you've got the basic authentication done, we'll move on to some other techniques, such as SMS authentication and Face ID.
