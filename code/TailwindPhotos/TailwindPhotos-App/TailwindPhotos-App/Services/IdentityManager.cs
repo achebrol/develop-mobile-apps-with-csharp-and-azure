@@ -1,6 +1,7 @@
 ﻿using Microsoft.AppCenter.Crashes;
 using Microsoft.Identity.Client;
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -38,7 +39,7 @@ namespace Tailwind.Photos.Services
 
         private IdentityManager()
         {
-            AuthorityBase = $"https://{Hostname}/tdp/{Tenant}/";
+            AuthorityBase = $"https://{Hostname}/tfp/{Tenant}/";
             Authority = $"{AuthorityBase}{UserFlow}";
 
             idp = PublicClientApplicationBuilder
@@ -50,6 +51,12 @@ namespace Tailwind.Photos.Services
         }
 
         public AuthenticationResult LastAuthenticationResult
+        {
+            get;
+            private set;
+        }
+
+        public AuthenticatedUser AuthenticatedUser
         {
             get;
             private set;
@@ -81,6 +88,7 @@ namespace Tailwind.Photos.Services
                     .WithB2CAuthority(Authority)
                     .ExecuteAsync();
                 LastAuthenticationResult = result;
+                AuthenticatedUser = new AuthenticatedUser(result.IdToken);
                 IsAuthenticated = true;
             }
             catch (MsalUiRequiredException)
@@ -109,6 +117,7 @@ namespace Tailwind.Photos.Services
                     .WithParentActivityOrWindow(window)
                     .ExecuteAsync();
                 LastAuthenticationResult = uiResult;
+                AuthenticatedUser = new AuthenticatedUser(uiResult.IdToken);
                 IsAuthenticated = true;
             }
             catch (Exception ex)

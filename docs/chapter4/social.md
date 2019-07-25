@@ -51,7 +51,7 @@ Now, let's create a Facebook app:
 12. Click **Dashboard** in the left-hand menu.
 13. Scroll down until you see **Add a Product** heading.  Click **Set up** on the **Facebook Login** panel.
 14. Select **Facebook Login** > **Settings** in the left-hand menu.
-15. In the **Valid OAuth Redirect URIs** box, enter `https://tenant-name.b2clogin/tenant-name.onmicrosoft.com/oauth2/authresp`.  Replace `tenant-name` with the name of your Azure AD B2C tenant.
+15. In the **Valid OAuth Redirect URIs** box, enter `https://tenant-name.b2clogin.com/tenant-name.onmicrosoft.com/oauth2/authresp`.  Replace `tenant-name` with the name of your Azure AD B2C tenant.
 
     ![](img/social-3.png)
 
@@ -142,7 +142,7 @@ Now that you are signed in:
 
 7. Click the edit icon next to **OAuth 2.0 settings** > **Redirect URLs**.
 8. Click **Add redirect URL**.
-9. Enter `https://tenant-name.b2clogin/tenant-name.onmicrosoft.com/oauth2/authresp`.  Replace `tenant-name` with the name of your Azure AD B2C tenant.
+9. Enter `https://tenant-name.b2clogin.com/tenant-name.onmicrosoft.com/oauth2/authresp`.  Replace `tenant-name` with the name of your Azure AD B2C tenant.
 10. Click **Update**.
 
 ### Register Facebook with Azure AD B2C
@@ -182,5 +182,87 @@ If you didn't do it during the Facebook configuration, you should also configure
 
 We'll use this later on to access the name and email address of the user.
 
-You can now run your mobile app and sign in.  This time through, you will see a LinkedIn login button in addition to the username and password login.
+You can now run your mobile app and sign in.  This time through, you will see a LinkedIn login button in addition to the username and password login.  You will be able to log in via LinkedIn now.
 
+## Decoding the provider token
+
+Azure Active Directory B2C returns a token to you with a number of claims in it.  One of those claims (assuming you have configured AAD B2C as suggested) is the identity provider claim.  On the profile page, I want to print some information from the profile.  This involves decoding the [JSON Web Token](https://en.wikipedia.org/wiki/JSON_Web_Token) (or JWT) to get at the information.
+
+First off, let's look at what a typical JWT looks like when decoded by copying it into [jwt.io](https://jwt.io):
+
+![](img/social-11.png)
+
+> I've fuzzed some important information for security reasons.  You should always strive to protect security information.
+
+The encoded version is in the `LastAuthenticationResult.IdToken` field.  To decode it, we need to use the `System.IdentityModel.Tokens.Jwt` package, which can be installed from NuGet.  Start with creating a model called `AuthenticatedUser.cs` as follows:
+
+```csharp
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+
+namespace Tailwind.Photos.Services
+{
+    public class AuthenticatedUser
+    {
+        public AuthenticatedUser(string token)
+        {
+            var decoded = new JwtSecurityToken(token);
+            Name = decoded.Claims.First(c => c.Type == "name").Value;
+            Email = decoded.Claims.First(c => c.Type == "emails").Value;
+            AccessToken = decoded.Claims.First(c => c.Type == "idp_access_token").Value;
+            var p = decoded.Claims.First(c => c.Type == "idp").Value;
+            if (p == "facebook.com") {
+                Authenticator = Provider.Facebook;
+            } else if (p == "linkedin.com") {
+                Authenticator = Provider.LinkedIn;
+            } else {
+                Authenticator = Provider.Username;
+            }
+        }
+
+        public string Name { get; private set; }
+        public string Email { get; private set; }
+        public string AccessToken { get; private set; }
+        public Provider Authenticator { get; private set; }
+
+        public enum Provider
+        {
+            Username,
+            Facebook,
+            LinkedIn
+        };
+    }
+}
+```
+
+The main work happens in the constructor.  The information from the JWT is decoded into the series of claims.  We place them into properties for easy access.  The provider is parsed.  It's normally a domain name if you are using a social provider, so we map the provider domain to an enum.  If the provider domain is not recognized, then we just assume it's a username/password.  
+
+> It's important to match the exact name of the claims.  If you are unsure, use `FirstOrDefault()` instead and handle the default case.
+
+You can easily wire this up into the `IdentityManager`.  Wherever you set the `LastAuthenticatedResult`, also set the AuthenticatedUser property:
+
+```csharp
+LastAuthenticationResult = uiResult;
+AuthenticatedUser = new AuthenticatedUser(uiResult.IdToken);
+IsAuthenticated = true;
+```
+
+There are two places in my code where this is needed.  A couple of points here:
+
+1. I can use the `Authenticator` and `AccessToken` to do graph queries on behalf of the user, if the social provider allows it.  Use the `Authenticator` to access the right social provider SDK and the `AccessToken` as the authentication.  You can use the [Plugin.FacebookClient](https://www.nuget.org/packages/Plugin.FacebookClient) package to do Facebook graph queries, for example.
+2. There is another field (called `sub`) that is extremely useful.  This is the ID of the user according to Azure Active Directory B2C and does not change.  This means it can be used as a primary key within databases, for instance.
+
+We can easily add this to our `ProfilePage.xaml` page by creating a couple of `Label` fields, then setting them in the constructor (after the `InitializeComponent()` call):
+
+```csharp
+public ProfilePage()
+{
+    InitializeComponent();
+
+    var authUser = IdentityManager.Instance.AuthenticatedUser;
+    nameField.Text = authUser.Name;
+    emailField.Text = authUser.Email;
+}
+```
+
+Of course, in any reasonable app, you would use data binding for this.

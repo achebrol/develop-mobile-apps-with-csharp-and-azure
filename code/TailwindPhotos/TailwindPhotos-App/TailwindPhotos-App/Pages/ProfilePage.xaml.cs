@@ -12,6 +12,10 @@ namespace Tailwind.Photos.Pages
         public ProfilePage()
         {
             InitializeComponent();
+
+            var authUser = IdentityManager.Instance.AuthenticatedUser;
+            nameField.Text = authUser.Name;
+            emailField.Text = authUser.Email;
         }
 
         async void OnSignoutClicked(object sender, EventArgs args)
