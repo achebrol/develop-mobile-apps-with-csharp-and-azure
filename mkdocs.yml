@@ -10,6 +10,7 @@ nav:
     - Deployment: chapter2/index.md
     - Analytics: chapter3/index.md
     - Authentication: chapter4/index.md
+    - Accessing Data: chapter5/index.md
 
 theme: 
   name: material

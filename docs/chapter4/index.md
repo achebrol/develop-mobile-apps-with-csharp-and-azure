@@ -25,5 +25,13 @@ In this chapter, we are going to look at various authentication methods and see 
 1. [Enterprise credentials via Azure Active Directory](aad.md).
 2. [Username and password authentication via Azure Active Directory B2C](b2c.md).
 3. [Social media authentication via Facebook, Twitter, Google, or LinkedIn](social.md).
-4. [Custom authentication scenarios](custom.md).
+4. Custom authentication methods
+
+Custom authentication methods tend to be more advanced topics.  They include:
+
+* Using biometrics for authentication.
+* Custom (native) UI.
+* Using social provider SDKs.
+
+We'll take a look at these advanced topics later in the book.
 
