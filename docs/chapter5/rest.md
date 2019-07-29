@@ -70,6 +70,28 @@ As with all resources, it will take a little bit of time to deploy the resource.
 !!! tip "Use service for common tasks"
     You don't have to code everything yourself.  The Azure marketplace has lots of services that you can use in your apps easily, such as SendGrid for sending email.  I almost always prefer to use a service as a component to writing the component myself.
 
+Next, let's create an application definition within Azure AD B2C.  This allows us to obtain an access token later on that includes a scope we can use for authorization to our web API.
+
+1. Select your Azure AD B2C directory (in the upper right corner, use **Switch directory**).
+2. Go to the Azure AD B2C resource (use **All services** and search for it).
+3. Select **Applications**, then your application (mine is called `Tailwinds-Photo for Xamarin`).
+4. Turn **Include web app / web API** to Yes, and **Allow implicit flow** to Yes.
+5. Enter `https://localhost/signin` as the **Reply URL**.
+6. Enter `api` in the **App ID URI**.
+7. Click **Save**.
+8. Select **Published scopes** in the menu.
+9. Enter `MailInviter.Send` in the **SCOPE**, and a suitable description in the description field.  Click **Save**.
+10. Click **API access**.
+11. Click **+ Add**.
+12. Select your app in the **Select API** box (in my case, `Tailwinds-Photo for Xamarin`).  Ensure all scopes are selected in **Select Scopes**.  Click **Ok**.
+13. Click **Keys**.
+14. Click **+ Generate key**.
+15. Click **Save**.
+16. Copy the App key that is generated as you won't be able to see it again. 
+
+!!! tip "Run your app and look at the JWT"
+    At this point, you should be able to run the app.  Set a breakpoint at the authentication point and take a look at the JWTs that are generated.  You should be able to use https://jwt.io to validate the JWT using the generated app key and see the new scope that was created within the access token.
+
 ### Create the Azure Function
 
 Now that we have a mechanism by which we can send email, we need to write the REST API that responds to the POST request in our app.
