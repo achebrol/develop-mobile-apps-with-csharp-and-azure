@@ -136,10 +136,10 @@ Waity for the deployment to complete before continuing.  The base configuration 
 6. Set **Management mode** to **Advanced**.
 7. Fill in the form:
     * The **Client ID** is the `ApplicationId` within `IdentityManager.cs`.
-    * The **Issuer Url** is of the following form: `https://TENANTNAME.b2clogin.com/TENANTID/v2.0/` - this is the `iss` field within the JWT.  
+    * The **Issuer Url** is of the following form: `https://TENANTNAME.b2clogin.com/tfp/TENANTNAME.onmicrosoft.com/B2C_1_Signin/v2.0/`.  
       * The `TENANTNAME` is the name of your Azure AD B2C tenant.  
-      * The `TENANTID` can be obtained by going to your Azure AD B2C tenant and clicking on the **Resource name**.  A new window will open with the tenant ID displayed.
-    * The Allowed Token Audiences is your Client ID.  It's the `aud` field in the JWT.
+      * The `B2C_1_Signin` is the policy name for your authentication policy.
+    * The **Allowed Token Audiences** is your Client ID.  It's the `aud` field in the JWT.
 8. Once complete, click **OK**, then **Save**.
 
 !!! tip "Never show off security tokens"
@@ -147,21 +147,27 @@ Waity for the deployment to complete before continuing.  The base configuration 
 
 We've now successfully configured an Azure Function app.  We can now move onto writing the code for it.  Let's start with a basic app that allows us to see what is going on:
 
-1.  Start Visual Studio.
+1. Start Visual Studio.
 2. Right-click the solution, then select **Add** > **New project...**.
 3. Enter `Functions` in the search box, then select **Azure Functions** (it should be the first match).
 4. Name the function `TailwindsFunctions`, then click **Create**.  (I use the same name for the project as I do for the resource.  A function app can contain many functions.)
 5. Ensure **HTTP Trigger** is selected.
-6. 
+6. Click **Create**.
 
-~~~ TODO ~~~
+!!! info "Storage Emulator or Browse...?"
+    The New Project dialog for an Azure Function gives you an option of using the storage emulator or an existing storage account.  You can run the Azure Function locally.  Pick the storage emulator and you can run the Azure Function locally without connectivity.  The storage location will be updated when you publish the function to Azure.
 
+You get a default function called `Function1.cs`.  Delete it so we can call the function by our own name.  Let's create a new function from scratch that just does some logging. 
 
+1. Right-click on `TailwindsFunctions` and select **Add** > **New Azure Function...**. 
+2. Enter the name `MailInviter` in the box provided, then click **Add**.
+3. Select **Http trigger**, and select **Anonymous** for the authorization level.
+4. Click **OK**.
 
 Before we continue, let's do some logging so we can actually use this function.  Replace the code for the `MailInviter` class with the following:
 
 ```csharp
-namespace TailwindsMailInviter
+namespace TailwindsFunctions
 {
     public static class MailInviter
     {
@@ -188,79 +194,59 @@ This dumps the request headers to the log, allowing us to analyze them.
 
 To deploy the Azure Function:
 
-1. Right-click on the `TailwindsMailInviter` project, and select **Publish...**.
-2. Check the **Run from package file (recommended)** box, then click **Publish**.
+1. Right-click on the `TailwindsFunctions` project, and select **Publish...**.
+2. Select **Select Existing**.
+3. Check the **Run from package file (recommended)** box, then click **Publish**.
 
     ![](img/rest-5.png)
 
-3. Fill in the form.  I like to give my resources a reasonable name.  
-4. Ensure you pick the same resource group as your other resources.
-
-    ![](img/rest-7.png)
-
-5. Click **New...** next to the hosting plan.
-6. Ensure the location is the same as the rest of your resources in your resource group, then click **OK**.
+4. Select your resource group and the function you deployed earlier.  Then click **OK**.
 
     ![](img/rest-6.png)
 
-7. Click **Create**.
+
+Your Function app will now be compiled and pushed to your deployed resource.  At this point, you can access the endpoint using the provided Site URL.
 
 Once deployment is done, the functions will be built and bundled, and then transferred to the newly deployed function app.  At this point, you can access them using the provided Site URL.
 
+![](img/rest-7.png)
+
+Right now, we have anonymous authorization, which means no authorization is required.  You can just hit the endpoint with Postman and it will return a 200 OK response while spitting out the headers.  To see for yourself, first open the **Cloud Explorer** (it's in the View menu if you are having problems finding it).  Expand the tree until you see the `TailwindsFunctions` function app. Click on the function app and you will see the actions that you can take.  Click **View Streaming Logs**.  In Postman, send a POST request with an empty body to `Site_URL/api/MailInviter` (note how the URL is constructed):
+
 ![](img/rest-8.png)
 
-As we did in Chapter 1, let's do a POST to the newly created API, but add an `Authorization` header to see what happens.  I'll give you the spoiler version - it produces a `401 Unauthorized` and your function produces no logs at all.
+In the output window, you will see a bunch of logsthat show off the headers.  This is nothing exciting.  Now, let's change the authorization level and submit an authenticated request.  There are five levels of authorization.  We've used _Anonymous_ authorization which means any HTTP request to the endpoint will be passed to your function.  The _Function_, _System_, and _Admin_ authorization levels are all key-based, and it depends on where the key is generated. 
 
-So, what happened?  Look at the signature of the function:
+* The _Admin_ level requires a **host** key.  You can set (or see) the host key in the **Function app settings** page on the function app within the Azure portal.
+* The _System_ level requires the **_master** key.  This can be viewed in the same **Function app settings** page on the function app within the Azure portal.
+* The _Function_ level requires a **function** key.  These are unique to each function.  You can see the function key (or create a new one) within the **Manage** page of the individual function.
+
+The final authorization type is _User_.  This requires that you send a JWT token as a bearer token in the `Authorization` header of the HTTP request.  The token must match the criteria that we set in the Authentication / Authorization section of the Azure function app earlier.  First, change the authorization level in `MailInviter.cs`:
 
 ```csharp
-public static async Task<IActionResult> Run(
-    [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-    ILogger log)
+public static class MailInviter
+{
+    [FunctionName("MailInviter")]
+    public static async Task<IActionResult> Run(
+        [HttpTrigger(AuthorizationLevel.User, "get", "post", Route = null)] HttpRequest req,
+        ILogger log)
+    {
+        log.LogInformation("C# HTTP trigger function processed a request.");
+        log.LogInformation("Request Headers: ");
+        foreach (var header in req.Headers)
+        {
+            log.LogInformation($"Header {header.Key} = '{header.Value}'");
+        }
+        return new OkResult();
+    }
+}
 ```
 
-In particular, let's concentrate on the authorization level - there are several authorization levels.  The most common ones are:
-
-* _Anonymous_: No API key is required.
-* _Function_: A function level API key is required.
-* _Admin_: An administrative API key is required (for all functions in the function app).
-
-Since we are going to be managing the authentication ourselves, we don't want an API key, so we can change the authorization level to `AuthorizationLevel.Anonymous`, and re-publish.  Now that we have the initial deployment
-done, this is as simple as the following:
-
-* Right-click on the project, then select **Publish...**.
-* Click the **Publish** button.
-
-If we re-send the request, we now get the following:
+Publish the new function definition.  Now that the publication profile is set up, you can click on the **Publish** button to do the publication.  Go back to Postman and send the same request again:
 
 ![](img/rest-9.png)
 
-It worked!  Now, let's take a look at the logs:
+You get a `401 Unauthorized` response back.  More interestingly, your function app was not executed.  You get charged on a per-execution basis with Azure Functions.  Setting authorization up means you don't get charged for failed attempts to execute your endpoint.
 
-* Open Visual Studio.
-* Select **View** > **Cloud Explorer**.  (Don't have Cloud Explorer?  It's available as an extension).
-* Select **Resource Groups** in the cloud explorer top drop-down.
-* Expand the resource groups until you see your function app.
-* Select your function app.
-* In the **Actions** window, select **View Streaming Logs**.
+To get a valid JWT, you need to create one.  The easiest way to do that is to run the mobile app and set a breakpoint in the `IdentityManager` when a successful authentication occurs.  You can then read the `IdToken` from the result.  Use the **Text Visualizer** to get the full value.  You can open the Text Visualizer using the drop-down next to the value you are trying to retrieve.
 
-![](img/rest-11.png)
-
-Resend the request to see the logs.  You can now log anything you want and see the live logs as you submit requests via Postman.
-
-### Write the Azure function code
-
-It's time to actually write the Azure function code.  You'll remember this is split into four stages:
-
-* First, check the authentication of the request.
-* If the authentication is good, then extract the email address and name from the token.
-* Then look at the request and decode the email address that we need to send the message to.
-* Finally, send the message!
-
-## Building a RESTful service object
-
-## Building a RESTful client object
-
-## Extensions
-
-We could extend this facility such that the email is not sent if the user is already a user of the system, or if multiple people are sending requests (so the user only gets one request).  This is all done in the back end systems, and I'll leave these extensions for you to code.  You may want to take a look at the data service in the `TailwindsPhotos` project to see what I've done.

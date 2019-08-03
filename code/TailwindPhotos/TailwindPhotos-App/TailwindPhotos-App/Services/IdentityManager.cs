@@ -17,7 +17,9 @@ namespace Tailwind.Photos.Services
 
         private string AuthorityBase;
         private string Authority;
-        private readonly string[] Scopes = { "https://tailwinds.onmicrosoft.com/api/Tailwinds.API" };
+        private readonly string[] Scopes = {
+            "https://tailwinds.onmicrosoft.com/api/Tailwinds.API"
+        };
 
         /// <summary>
         /// Lazy initializer for the identity manager (do not touch)
