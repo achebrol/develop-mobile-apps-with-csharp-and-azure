@@ -266,3 +266,6 @@ public ProfilePage()
 ```
 
 Of course, in any reasonable app, you would use data binding for this.
+
+!!! tip "Use whatever social providers you want!"
+    Azure AD B2C supports a number of social providers, including Amazon, GitHub, Goggle, Microsoft, QQ, Twitter, WeChat, and Weibo, with more being added all the time.  In addition, and OpenID Connect provider can be configured.   Let your users pick the authentication system they want to use; don't decide for them.

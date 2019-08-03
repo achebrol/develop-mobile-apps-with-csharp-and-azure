@@ -33,5 +33,4 @@ Custom authentication methods tend to be more advanced topics.  They include:
 * Custom (native) UI.
 * Using social provider SDKs.
 
-We'll take a look at these advanced topics later in the book.
-
+Native UI screens are supported by Azure AD B2C, and some Azure services (such as Azure App Service and Azure Functions) provide the capability to use social provider SDKs directly.  

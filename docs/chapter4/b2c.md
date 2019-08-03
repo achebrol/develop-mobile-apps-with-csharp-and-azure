@@ -82,6 +82,23 @@ We calculate the authority field within the constructor, which is used extensive
 !!! tip "B2C standard scopes"
     The MSAL (Microsoft.Identity.Client) library always sends three scopes to B2C - `openid`,  `profile`, and `offline_access`.  They are always included so you should not include them in the `Scopes` variable.  If you only want these, add a blank string (as I have here) to the Scopes.
 
+## Create a Web API definition
+
+Next, let's create an application definition within Azure AD B2C.  This allows us to obtain an access token later on that includes a scope we can use for authorization to our web API.
+
+1. Select your Azure AD B2C directory (in the upper right corner, use **Switch directory**).
+2. Go to the Azure AD B2C resource (use **All services** and search for it).
+3. Select **Applications**, then your application (mine is called `Tailwinds-Photo for Xamarin`).
+4. Turn **Include web app / web API** to Yes, and **Allow implicit flow** to Yes.
+5. Enter `https://localhost/signin` as the **Reply URL**.  We don't use it in the mobile context.
+6. Enter `api` in the **App ID URI**.
+7. Click **Save**.
+8. Select **Published scopes** in the menu.
+9. Enter `Tailwinds.API` in the **SCOPE**, and a suitable description in the description field.  Click **Save**.
+10. Click **API access**.
+11. Click **+ Add**.
+12. Select your app in the **Select API** box (in my case, `Tailwinds-Photo for Xamarin`).  Ensure all scopes are selected in **Select Scopes**.  Click **Ok**.
+
 Let's continue with adjusting the `IdentityManager.cs` class to use Azure AD B2C:
 
 ```csharp
@@ -163,10 +180,11 @@ Click the "Sign up now" link to get to the sign-up form.  It's a little wierd in
 
 Set a breakpoint in the `IdentityManager` on the two lines where we set the `AccessToken`.   Run the app again and sign in (if necessary - it's likely you won't need to).  You will note that there is no username or access token.  We haven't asked for an access token within the scopes, which is why one is not there.  As for `Username`; well - you didn't create one when the user was being created.  This is a common mistake.  You only get the information you ask for.  
 
-TODO: Explain how to get the User Id and Email Address!
-
+!!! tip "Record the iss and aud values"
+    While you are looking at the JWT contents, look for `iss` and `aud`.  These can easily be constructed, but you can take the opportunity to copy them as you will need them for authorization.
+    
 ## Next Steps
 
 My general advice is to use social media logins where possible.  It cuts down on the number of accounts that your users have to remember, which improves their security posture.  This does, of course, assume that the social media website is taking care of security as well.
 
-In the [next section](social.md), we'll take a look at integrating [social accounts](social.md) such as Facebook and Google.
+In the [next section](social.md), we'll take a look at integrating [social accounts](social.md) such as Facebook and Google.  
