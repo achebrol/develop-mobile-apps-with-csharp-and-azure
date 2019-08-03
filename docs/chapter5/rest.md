@@ -67,57 +67,96 @@ As with all resources, it will take a little bit of time to deploy the resource.
 10. Copy the API key (by clicking on it) - you will need it later and you can't get it back again. (I copy mine into a local notepad file).
 11. Click **Done**.
 
-!!! tip "Use service for common tasks"
+!!! tip "Use services for common tasks"
     You don't have to code everything yourself.  The Azure marketplace has lots of services that you can use in your apps easily, such as SendGrid for sending email.  I almost always prefer to use a service as a component to writing the component myself.
 
 Next, let's create an application definition within Azure AD B2C.  This allows us to obtain an access token later on that includes a scope we can use for authorization to our web API.
 
-1. Select your Azure AD B2C directory (in the upper right corner, use **Switch directory**).
-2. Go to the Azure AD B2C resource (use **All services** and search for it).
-3. Select **Applications**, then your application (mine is called `Tailwinds-Photo for Xamarin`).
-4. Turn **Include web app / web API** to Yes, and **Allow implicit flow** to Yes.
-5. Enter `https://localhost/signin` as the **Reply URL**.
-6. Enter `api` in the **App ID URI**.
-7. Click **Save**.
-8. Select **Published scopes** in the menu.
-9. Enter `MailInviter.Send` in the **SCOPE**, and a suitable description in the description field.  Click **Save**.
-10. Click **API access**.
-11. Click **+ Add**.
-12. Select your app in the **Select API** box (in my case, `Tailwinds-Photo for Xamarin`).  Ensure all scopes are selected in **Select Scopes**.  Click **Ok**.
-13. Click **Keys**.
-14. Click **+ Generate key**.
-15. Click **Save**.
-16. Copy the App key that is generated as you won't be able to see it again. 
+At this point, you should have the following information:
 
-!!! tip "Run your app and look at the JWT"
-    At this point, you should be able to run the app.  Set a breakpoint at the authentication point and take a look at the JWTs that are generated.  You should be able to use https://jwt.io to validate the JWT using the generated app key and see the new scope that was created within the access token.
+* The issuer of the JWT produced by Azure AD B2C.
+* The audience of the JWT produced by Azure AD B2C.
+* The client ID of the application within Azure AD B2C.
+* The scope of the Web API.
+* The API key for Sendgrid.
 
 ### Create the Azure Function
 
-Now that we have a mechanism by which we can send email, we need to write the REST API that responds to the POST request in our app.
+Now that we have a mechanism by which we can send email, we need to write the REST API that responds to the POST request in our app.  We're going to do this as an Azure Function.  This requires three resources:
 
-1. Start Visual Studio.
+* A storage account
+* An App hosting plan
+* The Azure Function App
+
+I like to create the function app separately to uploading from the code because this allows me to set up all resources the same way - through the portal or via automation.  You can deploy the entire Azure Function, including all needed resources, through Visual Studio as well.  In fact, Visual Studio makes it easy for you.  However, you will have to go into the portal to adjust some settings for authentication and authorization later on.
+
+!!! tip "Separate deployment from writing code"
+    Deployment is always a separate step to writing code, and you should get into the habit of separating them.  You might change code several times an hour, but you will not deploy resources unless it's necessary to do so.
+
+Let's start with creating the storage account.  I use a single storage account for each app I produce.  Think of the storage account as the storage facilities of your computer.  You might have a number of disks (which are akin to _containers_ in Azure Storage).  Each disk can have a lot of folders, and those folders contain files.  In Azure Storage, you have a lot of _blobs_.  Each blob has a key.  If you specify a path for the key, that's the folder.  It's even rendered this way in tooling such as the Azure Portal and Storage Explorer.
+
+So, a _storage account_ has _containers_, and those containers contain _blobs_.  The resource is the _storage account_ and it's easy to create:
+
+1. Open the [Azure portal](https://portal.azure.com).
+2. If you are not already on the default directory, switch to the default directory.  You can do this by clicking on your user ID in the top-right corner, then selecting **Switch directory**.
+3. Click **Resource groups**, then select your resource group (mind is `Tailwinds`).
+4. Click **+ Add** to add a resource.
+5. Enter _Storage_ in the search box, then select **Storage account**.
+6. Click **Create**.
+7. Fill in the form:
+   * Ensure the right subscription and resource group are selected (they should be by default).
+   * Enter a name (for example, `tailwindsstorage`)
+   * Pick the same region as your other resources.
+   * For the cheapest price, select **Standard** performance, **StorageV2**, and **Locally-redundant storage (LRS)**.
+8. Click **Review + create**.
+9. Click **Create**.
+
+Wait for the deployment to finish before continuing with the Azure Function:
+
+1. Go back to the resource group.
+2. Click **+ Add**.
+3. Enter _Function_ in the search box, then select **Function app**.
+4. Click **Create**.
+5. Fill in the form:
+    * Enter a suitable name (for example, `TailwindsFunction`).
+    * Pick your existing resource group.
+    * Ensure the location is the same region as your other resources.
+    * Use the storage account you have just created.
+6. Click **Create**.
+
+![](img/rest-4.png)
+
+Waity for the deployment to complete before continuing.  The base configuration of an Azure Function gives you the ability to stream logs to and debug with Visual Studio, Application Insights for production logging, and a basic .NET Core runtime.  We also want to be able to authorize users with Azure AD B2C:
+
+1. Once the function app is deployed, click **Go to resource**, or open the resource group and click on the new resource.
+2. Click **Platform features**.
+3. Click **Authentication / Authorization**
+4. Turn the App Service Authentication to **On**.
+5. Click the **Azure Active Directory** authentication provider.
+6. Set **Management mode** to **Advanced**.
+7. Fill in the form:
+    * The **Client ID** is the `ApplicationId` within `IdentityManager.cs`.
+    * The **Issuer Url** is of the following form: `https://TENANTNAME.b2clogin.com/TENANTID/v2.0/` - this is the `iss` field within the JWT.  
+      * The `TENANTNAME` is the name of your Azure AD B2C tenant.  
+      * The `TENANTID` can be obtained by going to your Azure AD B2C tenant and clicking on the **Resource name**.  A new window will open with the tenant ID displayed.
+    * The Allowed Token Audiences is your Client ID.  It's the `aud` field in the JWT.
+8. Once complete, click **OK**, then **Save**.
+
+!!! tip "Never show off security tokens"
+    You may think it wierd that I am not showing screen shots of the actual values I am entering.  I treat anything I would not place in the code of my mobile app as a secret.  Never show secrets to anyone - even if they will be deleted.  Showing secrets needlessly is a bad habit.
+
+We've now successfully configured an Azure Function app.  We can now move onto writing the code for it.  Let's start with a basic app that allows us to see what is going on:
+
+1.  Start Visual Studio.
 2. Right-click the solution, then select **Add** > **New project...**.
 3. Enter `Functions` in the search box, then select **Azure Functions** (it should be the first match).
-4. Name the function `TailwindsMailInviter`, then click **Create**.
+4. Name the function `TailwindsFunctions`, then click **Create**.  (I use the same name for the project as I do for the resource.  A function app can contain many functions.)
 5. Ensure **HTTP Trigger** is selected.
-6. Under **Storage Account**, select **Browse...**.
-7. Click **Create a storage account**.
-    a. Enter an account name of your choosing.
-    b. Ensure you select the same resource group and location as your other resources.
-    c. For this storage, the account type can be set to **Standard - Locally Redundant Storage**.
-8. Click **Create**.
+6. 
 
-    ![](img/rest-4.png)
+~~~ TODO ~~~
 
-9. The resource will be deployed before you can continue.  Once it is deployed, click **Add**.
-10. Click **Create**.
-11. Delete `Function1.cs`.  (No-one uses names like this!)
-12. Right-click on the new project, then select **Add** > **New Azure Function...**
-13. Enter the name `MailInviter.cs`, then click **Add**.
-14. Ensure **Http trigger** is selected, then click **OK**.
 
-Now we can get to the code for the function.  One of the nice things about Azure Functions (and serverless in general) is that you can focus on your business logic code rather than having to do a whole bunch of boiler plate.  You will notice that the entire default function is less than 40 lines of code, and that includes all the boiler plate code necessary to deal with HTTP.  Compare that to a typical ASP.NET Core project and you will soon see the advantage.
 
 Before we continue, let's do some logging so we can actually use this function.  Replace the code for the `MailInviter` class with the following:
 
