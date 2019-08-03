@@ -99,7 +99,13 @@ Next, let's create an application definition within Azure AD B2C.  This allows u
 11. Click **+ Add**.
 12. Select your app in the **Select API** box (in my case, `Tailwinds-Photo for Xamarin`).  Ensure all scopes are selected in **Select Scopes**.  Click **Ok**.
 
-Let's continue with adjusting the `IdentityManager.cs` class to use Azure AD B2C:
+Change the scopes line to the following:
+
+```csharp
+private readonly string[] Scopes = { "https://tailwinds.onmicrosoft.com/api/Tailwinds.API" };
+```
+
+The scope is comprised of the App ID URI and the published scope you just created.  Let's continue with adjusting the `IdentityManager.cs` class to use Azure AD B2C:
 
 ```csharp
 private IdentityManager()
@@ -182,7 +188,7 @@ Set a breakpoint in the `IdentityManager` on the two lines where we set the `Acc
 
 !!! tip "Record the iss and aud values"
     While you are looking at the JWT contents, look for `iss` and `aud`.  These can easily be constructed, but you can take the opportunity to copy them as you will need them for authorization.
-    
+
 ## Next Steps
 
 My general advice is to use social media logins where possible.  It cuts down on the number of accounts that your users have to remember, which improves their security posture.  This does, of course, assume that the social media website is taking care of security as well.

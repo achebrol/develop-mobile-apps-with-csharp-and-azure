@@ -1,7 +1,6 @@
 ﻿using Microsoft.AppCenter.Crashes;
 using Microsoft.Identity.Client;
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,7 +17,7 @@ namespace Tailwind.Photos.Services
 
         private string AuthorityBase;
         private string Authority;
-        private readonly string[] Scopes = { "" };
+        private readonly string[] Scopes = { "https://tailwinds.onmicrosoft.com/api/Tailwinds.API" };
 
         /// <summary>
         /// Lazy initializer for the identity manager (do not touch)

@@ -197,6 +197,7 @@ First off, let's look at what a typical JWT looks like when decoded by copying i
 The encoded version is in the `LastAuthenticationResult.IdToken` field.  To decode it, we need to use the `System.IdentityModel.Tokens.Jwt` package, which can be installed from NuGet.  Start with creating a model called `AuthenticatedUser.cs` as follows:
 
 ```csharp
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 
@@ -204,18 +205,29 @@ namespace Tailwind.Photos.Services
 {
     public class AuthenticatedUser
     {
+        Dictionary<string, Provider> idpMatch = new Dictionary<string, Provider>()
+        {
+            ["facebook.com"] = Provider.Facebook,
+            ["linkedin.com"] = Provider.LinkedIn
+        };
+
         public AuthenticatedUser(string token)
         {
             var decoded = new JwtSecurityToken(token);
-            Name = decoded.Claims.First(c => c.Type == "name").Value;
-            Email = decoded.Claims.First(c => c.Type == "emails").Value;
-            AccessToken = decoded.Claims.First(c => c.Type == "idp_access_token").Value;
-            var p = decoded.Claims.First(c => c.Type == "idp").Value;
-            if (p == "facebook.com") {
-                Authenticator = Provider.Facebook;
-            } else if (p == "linkedin.com") {
-                Authenticator = Provider.LinkedIn;
-            } else {
+            Name = decoded.Claims.FirstOrDefault(c => c.Type == "name").Value;
+            Email = decoded.Claims.FirstOrDefault(c => c.Type == "emails").Value;
+            if (decoded.Claims.Any(c => c.Type == "idp"))
+            {
+                var p = decoded.Claims.First(c => c.Type == "idp").Value;
+                Authenticator = (idpMatch.ContainsKey(p)) ? idpMatch[p] : Provider.Unknown;
+
+                if (decoded.Claims.Any(c => c.Type == "idp_access_token"))
+                {
+                    AccessToken = decoded.Claims.FirstOrDefault(c => c.Type == "idp_access_token").Value;
+                }
+            }
+            else
+            {
                 Authenticator = Provider.Username;
             }
         }
@@ -227,17 +239,17 @@ namespace Tailwind.Photos.Services
 
         public enum Provider
         {
+            Unknown,
             Username,
             Facebook,
             LinkedIn
         };
     }
 }
+
 ```
 
-The main work happens in the constructor.  The information from the JWT is decoded into the series of claims.  We place them into properties for easy access.  The provider is parsed.  It's normally a domain name if you are using a social provider, so we map the provider domain to an enum.  If the provider domain is not recognized, then we just assume it's a username/password.  
-
-> It's important to match the exact name of the claims.  If you are unsure, use `FirstOrDefault()` instead and handle the default case.
+The main work happens in the constructor.  The information from the JWT is decoded into the series of claims.  We place them into properties for easy access.  The provider is parsed.  It's normally a domain name if you are using a social provider, so we map the provider domain to an enum.  If the provider is not provided, then we just assume it's a username/password.  
 
 You can easily wire this up into the `IdentityManager`.  Wherever you set the `LastAuthenticatedResult`, also set the AuthenticatedUser property:
 
