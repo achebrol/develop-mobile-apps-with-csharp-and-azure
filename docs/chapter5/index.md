@@ -54,9 +54,9 @@ All three rules can be met by either GraphQL or OData protocols, so offline conc
 
 ## Offline First or Offline Maybe?
 
-When your app wants data, does it use the offline cache first (offline-first), or does it use the network resources first (offline-maybe)?  This is an important decision in your app and changes the architecture you use.
+When your app wants data, does it use the offline cache first (offline-first), or does it use the network resources first (offline-maybe)?  This is an important decision in your app and changes the architecture you use within the mobile app.
 
-If you use "offline-first", then all queries go against the offline cache.  Data that has not been synchronized yet is unavailable.  You get the ability to do random searches, sorting, and paging through in-built capabilities of the mobile platform and it will be as performant as required, but at the expense of the freshness of the data.  You can alleviate the freshness problem by using a real-time channel to be notified of new requests, and automatically doing a synchronization when coming online (either through an app restart or because the network came up).
+If you use "offline-first", then all queries go against the offline cache.  Data that has not been synchronized yet is unavailable.  You get the ability to do random searches, sorting, and paging through in-built capabilities of the mobile platform and it will be as performant as required, but at the expense of the freshness of the data.  You can alleviate the freshness problem by using a real-time channel to be notified of new requests, and automatically doing a synchronization when coming online (either through an app restart or because the network came up).  Offline-first backends don't need to support a significant wire protocol, so you can just do a basic REST backend and ignore the complexities of implementing GraphQL or OData if you choose.
 
 If you use "offline-maybe", then all queries go against the network and you only query the cache for records when you are offline.  This is more complex code and you lose the ability to do random searches, sorting, and paging if it isn't supported by the backend (making your backend more complex as well).  The network utilization and backend cost goes up since you will be using the network (and backend) more often.  The data is the freshest it can be.  You can alleviate the network and backend costs by caching records.  Your backend queries will need to be "cache aware" to avoid a second query as well.  Without a cache-aware query, you will ask for just the ID and updated time, then check the data against the cache.  
 
@@ -64,6 +64,37 @@ I'm a big fan of offline-first apps.  They appear to be more responsive to the u
 
 This book only considers offline-first apps.  However, you may want to expand your own knowledge of the chosen wire-protocol if you also provide a companion web application.  Web applications are, in general, not offline-aware and hit the backend for every request.  In most cases, you can provide a single backend for both the web application and the mobile app by providing different queries for each use case.
 
+## Serverless or Serverful
+
+The final consideration for your app is whether to make it serverless or to use some sort of server. 
+
+With a serverless model:
+
+* You write less code.
+* Your backend only runs when you needed, saving you money.
+* You don't have to deal with scaling your backend (but you have to scale the data store).
+* You have a "cold-start" issue (more on that later).
+
+With an App Service model:
+
+* You write full ASP.NET Core applications, so more code.
+* Your backend runs all the time, which may cost you more money.
+* You have to deal with scaling your backend and your data store.
+* You don't have a "cold-start" issue.
+
+What is "cold-start".  When a typical app starts, it first needs to load all the dependencies and then establish connections to the backend data store.  This takes time and it's time during which your application cannot be handling new requests that come in.  It's normally described as having an impact on the first request, but really it's having an effect on every request during this start up phase.
+
+All serverless applications suffer from "cold-start" right now.  The cloud providers keep the underlying resources that are running your serverless function around for a while (anywhere from 5 to 30 minutes), but eventually, the cloud provider will stop your function and require a new cold start.  This isn't the only time a cold-start is required.  If the scaling requirements show a need for starting an additional instance of the runtime to handle load, then this is done in the background and you don't know about it.  However, the new instance also requires a cold-start.  This is less noticeable since there are other instances able to handle the request.
+
+App services (or containers) do not suffer from this problem since they are running all the time (and you are paying for that running time irrespective of whether they are handling requests or not).
+
+The worst offenders for cold-start are those that either have a lot of dependencies (in our case, DLL files or .NET assemblies) that need to be loaded, or apps that have a persistent connection requirement such as a SQL service connection.
+
+If you are doing "offline-first" development, the user experience is not impacted by cold-start.  For this reason, I don't worry about the cold-start problem in terms of dependencies.  I do, however, worry about it from a connection point of view.  If the service needs a persistent connection, I write the backend as an ASP.NET Core application and run it in Azure App Service.  If the service is connectionless (for example, allowing HTTP access), then I write the backend as a serverless application and run it on Azure Functions.
+
+!!! tip "Avoid cold-start with Azure Functions"
+    Azure Functions has a number of facilities that enable you to avoid cold-start, including non-consumption based [App Service Plans](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans).  This has a different pricing model and works around the cold start issue by establishing your function in an always-on service.  This allows you to write your code in a single architecture, but get the capabilities of the app service.
+    
 ## Next steps
 
 You may have already formulated an opinion as to which data protocol to use.  If you have, jump to the chosen protocol:
@@ -71,4 +102,4 @@ You may have already formulated an opinion as to which data protocol to use.  If
 * [The OData Implementation](odata.md)
 * [The GraphQL Implementation](graphql.md)
 
-If you haven't decided, try both!  Start with [the OData implementation](odata.md).  
+If you haven't decided, try both!  Start with [the OData implementation](odata.md), but be aware that the final application will use [the GraphQL implementation](graphql.md).  

@@ -138,7 +138,7 @@ Waity for the deployment to complete before continuing.  The base configuration 
     * The **Client ID** is the `ApplicationId` within `IdentityManager.cs`.
     * The **Issuer Url** is of the following form: `https://TENANTNAME.b2clogin.com/tfp/TENANTNAME.onmicrosoft.com/B2C_1_Signin/v2.0/`.  
       * The `TENANTNAME` is the name of your Azure AD B2C tenant.  
-      * The `B2C_1_Signin` is the policy name for your authentication policy.
+      * The `B2C_1_Signin` is the policy name for your authentication policy.git pull
     * The **Allowed Token Audiences** is your Client ID.  It's the `aud` field in the JWT.
 8. Once complete, click **OK**, then **Save**.
 
